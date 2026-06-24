@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Hosted on **GitHub Pages** (no build step — just push to `main`)
 - To deploy changes: commit and push to `main`; GitHub Pages serves the updated file automatically
 - Live URL is served directly from the repo root
+- Git identity for this repo: `Kayla Morkel <kaylaannebambi@gmail.com>` (configured locally — not global)
 
 ## Architecture
 
@@ -39,6 +40,22 @@ travelBatches — [{ id, trips[], submitted, submittedTs, label, created }]  —
 ## Firebase config
 
 The Firebase project config (API key, project ID, etc.) is hardcoded in the HTML at line ~313. This is intentional for a GitHub Pages app. The `ALLOWED_EMAIL` constant (`kayla@bob.co.za`) is enforced on `onAuthStateChanged` — any other Google account is immediately signed out. This has been verified: accounts outside `bob.co.za` cannot authenticate.
+
+Firestore security rules enforce access server-side as a second layer — even if the client JS were modified, Firestore rejects any request whose auth token isn't `kayla@bob.co.za`:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email == 'kayla@bob.co.za';
+    }
+  }
+}
+```
+
+The `/{document=**}` wildcard covers all current and future collections.
 
 ## Onboarding / offboarding steps
 
