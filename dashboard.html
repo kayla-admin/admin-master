@@ -300,6 +300,19 @@ footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);dis
   </div>
 </div>
 <script>
+// ── DIAGNOSTICS (remove after debugging) ──────────────────────────────────
+console.log('[AM] Script starting — ' + new Date().toISOString());
+window.addEventListener('DOMContentLoaded', function(){
+  console.log('[AM] DOM ready');
+  var missing=[];
+  ['modalOverlay','modalTitle','modalBody','loadingScreen','authScreen','appScreen',
+   'tasksSection','worklogSection','mainGrid','travelSection'].forEach(function(id){
+    if(!document.getElementById(id))missing.push(id);
+  });
+  if(missing.length)console.error('[AM] MISSING DOM IDs:', missing);
+  else console.log('[AM] All required DOM IDs present');
+});
+// ─────────────────────────────────────────────────────────────────────────
 var OWNER='Kayla Morkel';
 var ALLOWED_EMAIL='kayla@bob.co.za';
 var TRIP_OFFICES=['Home','Menlyn Office','Bryanston Office','Durban Office','PE Office','Cape Town Office','Client Site','Other'];
@@ -321,8 +334,10 @@ auth.onAuthStateChanged(function(user){
 var memState={tasks:{},onboardings:[],offboardings:[],projects:[],worklog:[],travelLog:[],travelBatches:[]};
 var listenerStarted=false;
 function initDashboard(){
+  console.log('[AM] initDashboard called');
   if(listenerStarted)return;listenerStarted=true;updateDate();
   docRef.onSnapshot(function(doc){
+    console.log('[AM] Firestore snapshot received — exists:', doc.exists);
     if(doc.exists){
       var d=doc.data();
       memState.tasks=d.tasks||{};
@@ -337,11 +352,11 @@ function initDashboard(){
         memState.travelBatches=[migBatch];saveFS(Object.assign({},memState));
       }
     }
-    var open=getOpenSubs();renderAll();restoreOpenSubs(open);setSyncStatus('synced');
+    var open=getOpenSubs();renderAll();console.log('[AM] renderAll complete');restoreOpenSubs(open);setSyncStatus('synced');
   },function(err){console.error(err);setSyncStatus('error');});
 }
 function getFS(){return memState;}
-function saveFS(fs){memState=fs;setSyncStatus('saving');docRef.set(fs).then(function(){setSyncStatus('synced');}).catch(function(e){console.error(e);setSyncStatus('error');});}
+function saveFS(fs){memState=fs;setSyncStatus('saving');console.log('[AM] saveFS called');docRef.set(fs).then(function(){console.log('[AM] Firestore write OK');setSyncStatus('synced');}).catch(function(e){console.error('[AM] Firestore write FAILED:',e);setSyncStatus('error');});}
 function setSyncStatus(s){var dot=document.getElementById('syncDot');var label=document.getElementById('syncLabel');if(!dot||!label)return;dot.className='sync-dot';if(s==='saving'){dot.classList.add('saving');label.textContent='saving...';}else if(s==='error'){dot.classList.add('error');label.textContent='sync error';}else{label.textContent='synced';}}
 function uid(){return Math.random().toString(36).slice(2,9);}
 // ONBOARDING STEPS
@@ -451,6 +466,7 @@ function toggleTaskStep(id,si){
 function archiveTask(id){var fs=getFS();var proj=fs.projects.find(function(p){return p.id===id;});if(proj)proj.archived=true;saveFS(Object.assign({},fs));}
 function deleteTask(id){if(!confirm('Delete this task?'))return;var fs=getFS();fs.projects=fs.projects.filter(function(p){return p.id!==id;});saveFS(Object.assign({},fs));}
 function editTask(id){
+  console.log('[AM] editTask called — id:', id);
   _currentEditId=id;
   var fs=getFS();
   var proj=fs.projects.find(function(p){return p.id===id;});
@@ -507,7 +523,9 @@ function doSubmitTrip(){var from=document.getElementById('mFrom').value;var to=d
 function deleteTrip(id){var fs=getFS();var active=fs.travelBatches?fs.travelBatches.find(function(b){return!b.submitted;}):null;if(active)active.trips=active.trips.filter(function(t){return t.id!==id;});fs.travelLog=fs.travelLog.filter(function(t){return t.id!==id;});saveFS(Object.assign({},fs));}
 // MODAL
 function openModal(mode){
+  console.log('[AM] openModal called — mode:', mode);
   var overlay=document.getElementById('modalOverlay');var title=document.getElementById('modalTitle');var body=document.getElementById('modalBody');
+  if(!overlay||!title||!body){console.error('[AM] openModal: modal DOM elements missing!',{overlay:!!overlay,title:!!title,body:!!body});return;}
   overlay.classList.remove('hidden');
   var locOpts=LOCATIONS.map(function(l){return'<option>'+l+'</option>';}).join('');
   if(mode==='onboarding'){title.textContent='New Starter';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. Sarah Smith"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOnboarding()">Create Checklist</button></div>';}
