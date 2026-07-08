@@ -360,7 +360,7 @@ function saveFS(fs){
   memState=fs;setSyncStatus('saving');console.log('[AM] saveFS called');
   // JSON round-trip strips undefined values which Firestore rejects
   var clean;try{clean=JSON.parse(JSON.stringify(fs));}catch(e){console.error('[AM] saveFS serialise error:',e);setSyncStatus('error');return;}
-  docRef.set(clean).then(function(){console.log('[AM] Firestore write OK');setSyncStatus('synced');}).catch(function(e){console.error('[AM] Firestore write FAILED:',e);setSyncStatus('error');});
+  try{docRef.set(clean).then(function(){console.log('[AM] Firestore write OK');setSyncStatus('synced');}).catch(function(e){console.error('[AM] Firestore write FAILED:',e);setSyncStatus('error');});}catch(syncErr){console.error('[AM] Firestore write SYNC THROW:',syncErr);setSyncStatus('error');}
 }
 function setSyncStatus(s){var dot=document.getElementById('syncDot');var label=document.getElementById('syncLabel');if(!dot||!label)return;dot.className='sync-dot';if(s==='saving'){dot.classList.add('saving');label.textContent='saving...';}else if(s==='error'){dot.classList.add('error');label.textContent='sync error';}else{label.textContent='synced';}}
 function uid(){return Math.random().toString(36).slice(2,9);}
@@ -519,7 +519,7 @@ function saveEditTask(id){
   var steps=[];inputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});
   if(!steps.length)steps.push('Complete');
   var fs=getFS();var proj=fs.projects.find(function(p){return p.id===id;});if(!proj)return;
-  proj.name=name;proj.steps=steps.map(function(s,i){return{text:s,done:proj.steps[i]?proj.steps[i].done:false,doneTs:proj.steps[i]?proj.steps[i].doneTs:null};});
+  proj.name=name;proj.steps=steps.map(function(s,i){var prev=proj.steps[i];return{text:s,done:prev?!!prev.done:false,doneTs:prev&&prev.doneTs?prev.doneTs:null};});
   saveFS(Object.assign({},fs));closeModal();
 }
 // TRAVEL
