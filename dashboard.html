@@ -290,8 +290,8 @@ footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);dis
   <button class="reset-btn" onclick="resetManualTasks()">clear manual tasks</button>
 </footer>
 </div>
-<div id="modalOverlay" class="modal-overlay hidden" onclick="closeModal()">
-  <div class="modal" onclick="event.stopPropagation()">
+<div id="modalOverlay" class="modal-overlay hidden" onmousedown="if(event.target===this)_mDown=true" onmouseup="if(event.target===this&&_mDown)closeModal();_mDown=false;">
+  <div class="modal" onmousedown="event.stopPropagation()" onmouseup="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="modalTitle"></div>
       <button class="modal-close" onclick="closeModal()">&#x2715;</button>
@@ -352,7 +352,7 @@ function initDashboard(){
         memState.travelBatches=[migBatch];saveFS(Object.assign({},memState));
       }
     }
-    var open=getOpenSubs();renderAll();console.log('[AM] renderAll complete');restoreOpenSubs(open);setSyncStatus('synced');
+    var open=getOpenSubs();var openP=getOpenPersons();renderAll();console.log('[AM] renderAll complete');restoreOpenSubs(open);restoreOpenPersons(openP);setSyncStatus('synced');
   },function(err){console.error(err);setSyncStatus('error');});
 }
 function getFS(){return memState;}
@@ -423,6 +423,8 @@ function getPeriodLabel(d){if(wlFilter==='week'){var wn=getWeekKey(d).split('W')
 // OPEN SUBS
 function getOpenSubs(){var open=[];var els=document.querySelectorAll('[id^="sub_"]');for(var i=0;i<els.length;i++){if(els[i].classList.contains('open'))open.push(els[i].id.slice(4));}return open;}
 function restoreOpenSubs(ids){for(var i=0;i<ids.length;i++){var l=document.getElementById('sub_'+ids[i]);var b=document.getElementById('btn_'+ids[i]);if(l)l.classList.add('open');if(b)b.classList.add('open');}}
+function getOpenPersons(){var open=[];var els=document.querySelectorAll('[id^="psteps_"]');for(var i=0;i<els.length;i++){if(els[i].classList.contains('open'))open.push(els[i].id.slice(7));}return open;}
+function restoreOpenPersons(ids){for(var i=0;i<ids.length;i++){var s=document.getElementById('psteps_'+ids[i]);var c=document.getElementById('pchev_'+ids[i]);if(s)s.classList.add('open');if(c)c.classList.add('open');}}
 // WORKLOG
 function logCompletion(name,category,createdTs,completedTs,extra){
   var fs=getFS();if(!fs.worklog)fs.worklog=[];
@@ -448,7 +450,6 @@ function togglePersonStep(type,id,si){
   var allDone=inst.steps.every(function(s){return s.done;});
   if(allDone&&!inst.completedTs){inst.completedTs=Date.now();logCompletion((type==='on'?'Onboarding':'Offboarding')+': '+inst.name,'people',inst.created,inst.completedTs);}
   else{saveFS(Object.assign({},fs));}
-  setTimeout(function(){var s=document.getElementById('psteps_'+id);var c=document.getElementById('pchev_'+id);if(s&&!s.classList.contains('open')){s.classList.add('open');}if(c&&!c.classList.contains('open')){c.classList.add('open');}},50);
 }
 function archivePerson(type,id){var fs=getFS();var list=type==='on'?fs.onboardings:fs.offboardings;var inst=list.find(function(i){return i.id===id;});if(inst)inst.archived=true;saveFS(Object.assign({},fs));}
 function deletePerson(type,id){if(!confirm('Remove this checklist?'))return;var fs=getFS();if(type==='on'){fs.onboardings=fs.onboardings.filter(function(i){return i.id!==id;});}else{fs.offboardings=fs.offboardings.filter(function(i){return i.id!==id;});}saveFS(Object.assign({},fs));}
