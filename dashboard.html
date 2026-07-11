@@ -240,6 +240,30 @@ footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);dis
 .footer-note{font-size:.65rem;color:var(--muted);}
 .reset-btn{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.4rem .75rem;border-radius:2px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;transition:all .2s;}
 .reset-btn:hover{color:var(--text);border-color:var(--muted);}
+/* CONTROL BAR */
+.control-bar{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem;}
+.search-wrap{display:flex;align-items:center;gap:.6rem;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:.45rem .85rem;transition:border-color .2s;}
+.search-wrap:focus-within{border-color:var(--muted);}
+.search-input{background:none;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:.75rem;flex:1;outline:none;min-width:0;}
+.search-input::placeholder{color:var(--muted);}
+.search-clear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;padding:.1rem .2rem;flex-shrink:0;}
+.search-clear:hover{color:var(--text);}
+.tab-filter-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;}
+.tab-bar{display:flex;gap:.25rem;flex-wrap:wrap;}
+.tab-btn{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .8rem;border-radius:2px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.tab-btn:hover{color:var(--text);border-color:var(--muted);}
+.tab-btn.active{color:var(--bg);border-color:transparent;}
+.tab-btn[data-tab="all"].active{background:var(--text);}
+.tab-btn[data-tab="people"].active{background:var(--people);}
+.tab-btn[data-tab="expenses"].active{background:var(--expenses);}
+.tab-btn[data-tab="leadership"].active{background:var(--leadership);}
+.tab-btn[data-tab="ohs"].active{background:var(--ohs);}
+.tab-btn[data-tab="facilities"].active{background:var(--facilities);}
+.filter-bar{display:flex;gap:.25rem;}
+.filter-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .65rem;border-radius:2px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;}
+.filter-btn:hover{color:var(--text);}
+.filter-btn.active{background:var(--surface2);color:var(--text);border-color:var(--muted);}
+.grid.single-tab{grid-template-columns:1fr;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 @media(max-width:800px){.grid{grid-template-columns:1fr;}.card.full{grid-column:1;}.summary-row{grid-template-columns:repeat(3,1fr);}.header-left h1{font-size:1.8rem;}.tasks-inner-grid{grid-template-columns:1fr 1fr;}.wl-stats-row{grid-template-columns:1fr 1fr;}.tasks-summary-row,.travel-stats{grid-template-columns:1fr 1fr 1fr;}}
 </style>
@@ -280,10 +304,9 @@ footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);dis
   <div class="legend-item"><div class="legend-dot manual"></div> manual</div>
 </div>
 <div class="summary-row" id="summaryRow"></div>
-<br>
+<div id="controlBar"></div>
 <div id="worklogSection"></div>
-<div id="tasksSection"></div>
-<div class="grid" id="mainGrid"></div>
+<div id="tabContent"></div>
 <div id="travelSection"></div>
 <footer>
   <div class="footer-note">Admin Master &middot; secured &middot; Kayla Morkel &middot; <span id="buildVer" style="opacity:.4">v54de474</span></div>
@@ -317,6 +340,20 @@ var OWNER='Kayla Morkel';
 var ALLOWED_EMAIL='kayla@bob.co.za';
 var TRIP_OFFICES=['Home','Menlyn Office','Bryanston Office','Durban Office','PE Office','Cape Town Office','Client Site','Other'];
 var LOCATIONS=['Menlyn','Bryanston','Durban','PE','Cape Town'];
+var activeTab='all';var activeFilter='all';var searchQuery='';var _mDown=false;
+var CATEGORY_KEYWORDS={
+  people:['people','p&c','onboard','offboard','hr','staff','employee','birthday','leaver','starter','hire','gift'],
+  expenses:['expense','finance','cost','budget','grocery','groceries','lunch','food','order','payment','invoice','vending','coffee','rusk','water','makro','slip'],
+  leadership:['leadership','leader','meeting','breakaway','offsite','venue','merch','merchandise','function'],
+  ohs:['health','safety','h&s','ohs','first aid','incident','compliance'],
+  facilities:['facilities','building','office','maintenance','repair','renovation','access','aircon','bulb'],
+};
+function detectCategory(name){var lower=name.toLowerCase();for(var cat in CATEGORY_KEYWORDS){var kws=CATEGORY_KEYWORDS[cat];for(var i=0;i<kws.length;i++){if(lower.indexOf(kws[i])!==-1)return cat;}}return'general';}
+function autoDetectCat(name){var sel=document.getElementById('mTaskCat');if(sel&&name.length>3){sel.value=detectCategory(name);}}
+function setTab(t){activeTab=t;renderTabContent();}
+function setFilter(f){activeFilter=f;renderTabContent();}
+function onSearch(val){searchQuery=val.toLowerCase().trim();renderTabContent();}
+function clearSearch(){searchQuery='';var inp=document.getElementById('searchInput');if(inp)inp.value='';renderTabContent();}
 var firebaseConfig={apiKey:"AIzaSyAKxlBgvOFaKx4HfllfY7RRfgwOd9r4TjA",authDomain:"admin-master-ca402.firebaseapp.com",projectId:"admin-master-ca402",storageBucket:"admin-master-ca402.firebasestorage.app",messagingSenderId:"87132621222",appId:"1:87132621222:web:11f2b84a8cc9f0e7946767"};
 firebase.initializeApp(firebaseConfig);
 var auth=firebase.auth();
@@ -456,7 +493,7 @@ function deletePerson(type,id){if(!confirm('Remove this checklist?'))return;var 
 function deletePersonStep(type,id,si){var fs=getFS();var list=type==='on'?fs.onboardings:fs.offboardings;var inst=list.find(function(i){return i.id===id;});if(inst&&inst.steps.length>1){inst.steps.splice(si,1);saveFS(Object.assign({},fs));}}
 function togglePersonExpand(id){var s=document.getElementById('psteps_'+id);var c=document.getElementById('pchev_'+id);if(!s)return;s.classList.toggle('open');if(c)c.classList.toggle('open');}
 // AD-HOC TASKS
-function createTask(name,steps){var fs=getFS();if(!fs.projects)fs.projects=[];fs.projects.push({id:uid(),name:name,steps:steps.map(function(s){return{text:s,done:false};}),archived:false,created:Date.now()});saveFS(Object.assign({},fs));}
+function createTask(name,steps,category){var fs=getFS();if(!fs.projects)fs.projects=[];fs.projects.push({id:uid(),name:name,steps:steps.map(function(s){return{text:s,done:false};}),archived:false,created:Date.now(),category:category||'general'});saveFS(Object.assign({},fs));}
 function toggleTaskStep(id,si){
   var fs=getFS();var proj=fs.projects.find(function(p){return p.id===id;});if(!proj)return;
   var now=Date.now();proj.steps[si].done=!proj.steps[si].done;
@@ -536,7 +573,12 @@ function openModal(mode){
   var locOpts=LOCATIONS.map(function(l){return'<option>'+l+'</option>';}).join('');
   if(mode==='onboarding'){title.textContent='New Starter';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. Sarah Smith"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOnboarding()">Create Checklist</button></div>';}
   else if(mode==='offboarding'){title.textContent='New Leaver';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. John Doe"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Last Day</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOffboarding()">Create Checklist</button></div>';}
-  else if(mode==='task'){title.textContent='New Task';body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';}
+  else if(mode==='task'){
+    var precat=activeTab!=='all'?activeTab:'general';
+    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
+    title.textContent='New Task';
+    body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
+  }
   else if(mode==='backdate'){
     var catOpts=['Expenses','People','Leadership','Facilities','Health & Safety','Other'].map(function(c){return'<option>'+c+'</option>';}).join('');
     title.textContent='Add Past Entry';
@@ -549,7 +591,7 @@ function addStepInput(){var list=document.getElementById('stepsInputList');var n
 function removeStepInput(btn){var row=btn.parentElement;if(row.parentElement.children.length>1)row.remove();}
 function submitOnboarding(){var name=document.getElementById('mName').value.trim();if(!name)return;closeModal();createOnboarding(name,document.getElementById('mLoc').value,document.getElementById('mDate').value);}
 function submitOffboarding(){var name=document.getElementById('mName').value.trim();if(!name)return;closeModal();createOffboarding(name,document.getElementById('mLoc').value,document.getElementById('mDate').value);}
-function submitTask(){var name=document.getElementById('mProjName').value.trim();if(!name)return;var inputs=document.getElementById('stepsInputList').querySelectorAll('input');var steps=[];inputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});if(!steps.length)steps.push('Complete');closeModal();createTask(name,steps);}
+function submitTask(){var name=document.getElementById('mProjName').value.trim();if(!name)return;var inputs=document.getElementById('stepsInputList').querySelectorAll('input');var steps=[];inputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});if(!steps.length)steps.push('Complete');var cat=document.getElementById('mTaskCat')?document.getElementById('mTaskCat').value:'general';closeModal();createTask(name,steps,cat);}
 function submitBackdate(){var name=document.getElementById('mBdName').value.trim();if(!name){document.getElementById('mBdName').focus();return;}var cat=document.getElementById('mBdCat').value;var dateStr=document.getElementById('mBdDate').value;var timeStr=document.getElementById('mBdTime').value||'09:00';if(!dateStr){document.getElementById('mBdDate').focus();return;}var dt=new Date(dateStr+'T'+timeStr);var ts=dt.getTime();var fs=getFS();if(!fs.worklog)fs.worklog=[];fs.worklog.push({id:uid(),name:name,category:'recurring:'+cat,created:ts-300000,completed:ts});saveFS(Object.assign({},fs));closeModal();}
 // EXPORT
 var wlFilter='week';
@@ -666,25 +708,68 @@ var categories=[
 // RENDER
 function getProgress(cat){var done=0;cat.tasks.forEach(function(t,ti){if(allSubsDone(cat,ti))done++;});return{done:done,total:cat.tasks.length,pct:cat.tasks.length?Math.round(done/cat.tasks.length*100):0};}
 function renderSummary(){document.getElementById('summaryRow').innerHTML=categories.map(function(cat){var p=getProgress(cat);return'<div class="summary-card '+cat.color+'"><div class="summary-num">'+p.done+'/'+p.total+'</div><div class="summary-label">'+cat.label+'</div></div>';}).join('');}
-function renderGrid(){
-  document.getElementById('mainGrid').innerHTML=categories.map(function(cat,ci){
-    var p=getProgress(cat);
-    var tasks=cat.tasks.map(function(task,ti){
-      var isDone=allSubsDone(cat,ti);var hasSubs=!!task.subs;var uid2=cat.id+'_'+ti;
-      var spDone=0,spTotal=0;if(hasSubs){spTotal=task.subs.length;task.subs.forEach(function(_,si){if(isTaskDone(uid2+'_'+si,task.freq))spDone++;});}
-      var subHTML='';if(hasSubs){subHTML='<ul class="subtask-list" id="sub_'+uid2+'">'+task.subs.map(function(sub,si){var sDone=isTaskDone(uid2+'_'+si,task.freq);return'<li class="subtask-item'+(sDone?' done':'')+'" onclick="toggleSub(\''+cat.id+'\','+ti+','+si+')"><div class="sub-checkbox"></div><span class="sub-text">'+sub.text+'</span>'+(sub.note?'<span class="sub-note">'+sub.note+'</span>':'')+'</li>';}).join('')+'</ul>';}
-      var mc=hasSubs?'toggleExpand(\''+uid2+'\')':'toggleMain(\''+cat.id+'\','+ti+')';
-      return'<li class="task-item'+(isDone?' done':'')+(hasSubs?' has-sub':'')+'"><div class="task-main" onclick="'+mc+'">'+(!hasSubs?'<div class="checkbox"></div>':'<span class="expand-btn" id="btn_'+uid2+'">\u25b6</span>')+'<span class="task-text">'+task.text+'</span><div class="task-meta">'+(hasSubs?'<span class="sub-progress">'+spDone+'/'+spTotal+'</span>':'')+'<span class="task-freq">'+task.freq+'</span><span class="task-reset">'+nextReset(task.freq)+'</span></div></div>'+subHTML+'</li>';
-    }).join('');
-    var extra='';
-    if(cat.id==='people'){
-      var fs=getFS();var aOn=fs.onboardings.filter(function(i){return!i.archived;});var aOff=fs.offboardings.filter(function(i){return!i.archived;});
-      if(aOn.length||aOff.length){extra='<div class="people-instances-inline">'+aOn.map(function(i){return renderPersonInstance('on',i);}).join('')+aOff.map(function(i){return renderPersonInstance('off',i);}).join('')+'</div>';}
-    }
-    var ib=cat.id==='people'?'<div class="card-header-right"><button class="add-btn green" onclick="openModal(\'onboarding\')">+ New Starter</button><button class="add-btn red" onclick="openModal(\'offboarding\')">+ New Leaver</button></div>':'';
-    var isLast=ci===categories.length-1&&categories.length%2!==0;
-    return'<div class="card '+cat.color+(isLast?' full':'')+'" style="animation-delay:'+(0.15+ci*0.08)+'s"><div class="card-header"><div class="dot"></div><div class="card-title">'+cat.label+'</div>'+ib+'</div><ul class="task-list">'+tasks+'</ul>'+extra+'<div class="progress-bar"><div class="progress-fill" style="width:'+p.pct+'%"></div></div><div class="progress-label">'+p.done+' of '+p.total+' done this period</div></div>';
+function catCardHTML(cat,ci){
+  var p=getProgress(cat);
+  var tasks=cat.tasks.map(function(task,ti){
+    var isDone=allSubsDone(cat,ti);var hasSubs=!!task.subs;var uid2=cat.id+'_'+ti;
+    if(activeFilter==='todo'&&isDone)return'';
+    if(activeFilter==='done'&&!isDone)return'';
+    if(searchQuery){var m=task.text.toLowerCase().indexOf(searchQuery)!==-1;if(!m&&task.subs)m=task.subs.some(function(s){return s.text.toLowerCase().indexOf(searchQuery)!==-1;});if(!m)return'';}
+    var spDone=0,spTotal=0;if(hasSubs){spTotal=task.subs.length;task.subs.forEach(function(_,si){if(isTaskDone(uid2+'_'+si,task.freq))spDone++;});}
+    var subHTML='';if(hasSubs){subHTML='<ul class="subtask-list" id="sub_'+uid2+'">'+task.subs.map(function(sub,si){var sDone=isTaskDone(uid2+'_'+si,task.freq);return'<li class="subtask-item'+(sDone?' done':'')+'" onclick="toggleSub(\''+cat.id+'\','+ti+','+si+')"><div class="sub-checkbox"></div><span class="sub-text">'+sub.text+'</span>'+(sub.note?'<span class="sub-note">'+sub.note+'</span>':'')+'</li>';}).join('')+'</ul>';}
+    var mc=hasSubs?'toggleExpand(\''+uid2+'\')':'toggleMain(\''+cat.id+'\','+ti+')';
+    return'<li class="task-item'+(isDone?' done':'')+(hasSubs?' has-sub':'')+'"><div class="task-main" onclick="'+mc+'">'+(!hasSubs?'<div class="checkbox"></div>':'<span class="expand-btn" id="btn_'+uid2+'">\u25b6</span>')+'<span class="task-text">'+task.text+'</span><div class="task-meta">'+(hasSubs?'<span class="sub-progress">'+spDone+'/'+spTotal+'</span>':'')+'<span class="task-freq">'+task.freq+'</span><span class="task-reset">'+nextReset(task.freq)+'</span></div></div>'+subHTML+'</li>';
   }).join('');
+  var extra='';
+  if(cat.id==='people'){var fsP=getFS();var aOn=fsP.onboardings.filter(function(i){return!i.archived;});var aOff=fsP.offboardings.filter(function(i){return!i.archived;});if(aOn.length||aOff.length){extra='<div class="people-instances-inline">'+aOn.map(function(i){return renderPersonInstance('on',i);}).join('')+aOff.map(function(i){return renderPersonInstance('off',i);}).join('')+'</div>';}}
+  var ib=cat.id==='people'?'<div class="card-header-right"><button class="add-btn green" onclick="openModal(\'onboarding\')">+ New Starter</button><button class="add-btn red" onclick="openModal(\'offboarding\')">+ New Leaver</button></div>':'';
+  var isLast=activeTab==='all'&&ci===categories.length-1&&categories.length%2!==0;
+  return'<div class="card '+cat.color+(isLast?' full':'')+'" style="animation-delay:'+(0.15+ci*0.08)+'s"><div class="card-header"><div class="dot"></div><div class="card-title">'+cat.label+'</div>'+ib+'</div><ul class="task-list">'+tasks+'</ul>'+extra+'<div class="progress-bar"><div class="progress-fill" style="width:'+p.pct+'%"></div></div><div class="progress-label">'+p.done+' of '+p.total+' done this period</div></div>';
+}
+function renderControlBar(){
+  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'}];
+  var tabsHTML=tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join('');
+  var fLabels={all:'All',todo:'To Do',done:'Done'};
+  var filtersHTML=['all','todo','done'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'" onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
+  document.getElementById('controlBar').innerHTML='<div class="control-bar"><div class="search-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" id="searchInput" placeholder="Search tasks\u2026" oninput="onSearch(this.value)" value="'+searchQuery.replace(/"/g,'&quot;')+'"/>'+(searchQuery?'<button class="search-clear" onclick="clearSearch()">\u2715</button>':'')+'</div><div class="tab-filter-row"><div class="tab-bar">'+tabsHTML+'</div><div class="filter-bar">'+filtersHTML+'</div></div></div>';
+}
+function tasksHTML(catFilter){
+  var fs=getFS();
+  var active=fs.projects.filter(function(p){
+    if(p.archived)return false;
+    if(catFilter&&catFilter!=='all'&&(p.category||'general')!==catFilter)return false;
+    var allDone=p.steps.every(function(s){return s.done;});
+    if(activeFilter==='todo'&&allDone)return false;
+    if(activeFilter==='done'&&!allDone)return false;
+    if(searchQuery){var m=p.name.toLowerCase().indexOf(searchQuery)!==-1;if(!m)m=p.steps.some(function(s){return s.text.toLowerCase().indexOf(searchQuery)!==-1;});if(!m)return false;}
+    return true;
+  });
+  var archived=fs.projects.filter(function(p){if(!p.archived)return false;if(catFilter&&catFilter!=='all'&&(p.category||'general')!==catFilter)return false;return true;});
+  var doneSteps=0;active.forEach(function(p){p.steps.forEach(function(s){if(s.done)doneSteps++;});});
+  var statsHTML='<div class="tasks-summary-row"><div class="tasks-summary-card"><div class="tasks-summary-num">'+active.length+'</div><div class="tasks-summary-label">Active</div></div><div class="tasks-summary-card"><div class="tasks-summary-num">'+doneSteps+'</div><div class="tasks-summary-label">Steps Done</div></div><div class="tasks-summary-card"><div class="tasks-summary-num">'+archived.length+'</div><div class="tasks-summary-label">Archived</div></div></div>';
+  var cardsH=active.length?'<div class="tasks-inner-grid">'+active.map(function(proj){
+    var dc=proj.steps.filter(function(s){return s.done;}).length;var total=proj.steps.length;var pct=Math.round(dc/total*100);var allDone=dc===total;
+    var pc=proj.category&&proj.category!=='general'?proj.category:null;
+    var catBadge=pc?'<span style="font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--'+pc+');padding:.1rem .35rem;border:1px solid currentColor;border-radius:2px;opacity:.75;display:inline-block;margin-top:.2rem">'+pc+'</span>':'';
+    var steps=proj.steps.map(function(step,si){return'<li class="task-step'+(step.done?' done':'')+'" onclick="toggleTaskStep(\''+proj.id+'\','+si+')"><div class="pstep-cb"></div><span class="pstep-text">'+step.text+'</span></li>';}).join('');
+    return'<div class="task-card"><div class="task-card-header"><div style="flex:1"><div class="task-card-name">'+proj.name+'</div>'+catBadge+'</div><div class="task-card-actions"><button class="icon-btn" onclick="editTask(\''+proj.id+'\')" title="Edit">\u270e</button><button class="icon-btn del" onclick="deleteTask(\''+proj.id+'\')" title="Delete">&#x2715;</button></div></div><div class="task-card-ts">added '+fmtTs(proj.created)+'</div><div class="task-prog-bar"><div class="task-prog-fill" style="width:'+pct+'%"></div></div><ul class="task-step-list">'+steps+'</ul><div class="task-card-footer"><span class="task-prog-label">'+dc+' / '+total+' steps</span>'+(allDone?'<button class="archive-btn" onclick="archiveTask(\''+proj.id+'\')">Done \u2713</button>':'')+'</div></div>';
+  }).join('')+'</div>':'';
+  var archH=archived.length?'<button class="show-archived-btn" onclick="toggleArchivedTasks()">\u25b6 '+archived.length+' archived</button><div id="archivedTasks" style="display:none"></div>':'';
+  var emptyMsg=!active.length?'<div class="tasks-empty" style="margin-top:.75rem">'+(searchQuery||activeFilter!=='all'?'No tasks match the current filter.':'Nothing on the plate. Hit + New Task when something lands.')+'</div>':'';
+  return'<div class="tasks-block"><div class="card-header" style="margin-bottom:1rem"><div class="dot" style="background:var(--leadership)"></div><div class="card-title">Tasks</div><div class="card-header-right"><button class="add-btn" onclick="openModal(\'task\')">+ New Task</button></div></div>'+statsHTML+cardsH+emptyMsg+archH+'</div>';
+}
+function renderTabContent(){
+  renderControlBar();
+  var html='';
+  if(activeTab==='all'){
+    html+=tasksHTML('all');
+    html+='<div class="grid">'+categories.map(function(cat,ci){return catCardHTML(cat,ci);}).join('')+'</div>';
+  } else {
+    var cat=categories.find(function(c){return c.id===activeTab;});
+    if(cat)html+='<div class="grid single-tab">'+catCardHTML(cat,0)+'</div>';
+    html+=tasksHTML(activeTab);
+  }
+  document.getElementById('tabContent').innerHTML=html;
 }
 function renderPersonInstance(type,inst){
   var dc=inst.steps.filter(function(s){return s.done;}).length;var total=inst.steps.length;var pct=Math.round(dc/total*100);var allDone=dc===total;
@@ -742,15 +827,7 @@ function renderWorklog(){
     '<span class="wl-chevron'+(wlOpen?' open':'')+'">'+( wlOpen?'\u25bc':'\u25b6')+'</span>'+
     '</div>'+bodyHTML+'</div>';
 }
-function renderTasks(){
-  var fs=getFS();var active=fs.projects.filter(function(p){return!p.archived;});var archived=fs.projects.filter(function(p){return p.archived;});
-  var doneSteps=0;active.forEach(function(p){p.steps.forEach(function(s){if(s.done)doneSteps++;});});
-  var statsHTML='<div class="tasks-summary-row"><div class="tasks-summary-card"><div class="tasks-summary-num">'+active.length+'</div><div class="tasks-summary-label">Active</div></div><div class="tasks-summary-card"><div class="tasks-summary-num">'+doneSteps+'</div><div class="tasks-summary-label">Steps Done</div></div><div class="tasks-summary-card"><div class="tasks-summary-num">'+archived.length+'</div><div class="tasks-summary-label">Archived</div></div></div>';
-  var cardsHTML=active.length?'<div class="tasks-inner-grid">'+active.map(function(proj){var dc=proj.steps.filter(function(s){return s.done;}).length;var total=proj.steps.length;var pct=Math.round(dc/total*100);var allDone=dc===total;var steps=proj.steps.map(function(step,si){return'<li class="task-step'+(step.done?' done':'')+'" onclick="toggleTaskStep(\''+proj.id+'\','+si+')"><div class="pstep-cb"></div><span class="pstep-text">'+step.text+'</span></li>';}).join('');return'<div class="task-card"><div class="task-card-header"><div class="task-card-name">'+proj.name+'</div><div class="task-card-actions"><button class="icon-btn" onclick="editTask(\''+proj.id+'\')" title="Edit">\u270e</button><button class="icon-btn del" onclick="deleteTask(\''+proj.id+'\')" title="Delete">&#x2715;</button></div></div><div class="task-card-ts">added '+fmtTs(proj.created)+'</div><div class="task-prog-bar"><div class="task-prog-fill" style="width:'+pct+'%"></div></div><ul class="task-step-list">'+steps+'</ul><div class="task-card-footer"><span class="task-prog-label">'+dc+' / '+total+' steps</span>'+(allDone?'<button class="archive-btn" onclick="archiveTask(\''+proj.id+'\')">Done \u2713</button>':'')+'</div></div>';}).join('')+'</div>':'<div class="tasks-empty" style="margin-top:.75rem">Nothing on the plate. Hit + New Task when something lands.</div>';
-  var archHTML=archived.length?'<button class="show-archived-btn" onclick="toggleArchivedTasks()">\u25b6 '+archived.length+' archived</button><div id="archivedTasks" style="display:none"></div>':'';
-  document.getElementById('tasksSection').innerHTML='<div class="tasks-block"><div class="card-header" style="margin-bottom:1rem"><div class="dot" style="background:var(--leadership)"></div><div class="card-title">Tasks</div><div class="card-header-right"><button class="add-btn" onclick="openModal(\'task\')">+ New Task</button></div></div>'+statsHTML+cardsHTML+archHTML+'</div>';
-}
-function toggleArchivedTasks(){var el=document.getElementById('archivedTasks');var btn=el?el.previousElementSibling:null;if(!el||!btn)return;if(el.style.display==='none'){var fs=getFS();var archived=fs.projects.filter(function(p){return p.archived;});el.innerHTML='<div class="tasks-inner-grid" style="margin-top:.75rem">'+archived.map(function(p){return'<div class="task-card" style="opacity:.45"><div class="task-card-name">'+p.name+'</div><div class="task-card-ts">'+(p.completedTs?fmtTs(p.completedTs):'archived')+'</div></div>';}).join('')+'</div>';el.style.display='block';btn.textContent='\u25bc hide archived';}else{el.style.display='none';renderTasks();}}
+function toggleArchivedTasks(){var el=document.getElementById('archivedTasks');var btn=el?el.previousElementSibling:null;if(!el||!btn)return;if(el.style.display==='none'){var fs=getFS();var archived=fs.projects.filter(function(p){if(!p.archived)return false;if(activeTab!=='all'&&(p.category||'general')!==activeTab)return false;return true;});el.innerHTML='<div class="tasks-inner-grid" style="margin-top:.75rem">'+archived.map(function(p){return'<div class="task-card" style="opacity:.45"><div class="task-card-name">'+p.name+'</div><div class="task-card-ts">'+(p.completedTs?fmtTs(p.completedTs):'archived')+'</div></div>';}).join('')+'</div>';el.style.display='block';btn.textContent='\u25bc hide archived';}else{el.style.display='none';renderTabContent();}}
 function renderTravelClaims(){
   var fs=getFS();var now=new Date();var day=now.getDate();
   var batches=fs.travelBatches||[];var activeBatch=batches.find(function(b){return!b.submitted;})||{trips:[],submitted:false};
@@ -769,7 +846,7 @@ function renderTravelClaims(){
   var statsHTML='<div class="travel-stats"><div class="travel-stat"><div class="travel-stat-num">'+trips.length+'</div><div class="travel-stat-label">Unsubmitted Trips</div></div><div class="travel-stat"><div class="travel-stat-num">'+ms[now.getMonth()]+'</div><div class="travel-stat-label">Current Cycle</div></div><div class="travel-stat"><div class="travel-stat-num" style="font-size:1rem;padding-top:.3rem">'+deadlineLabel+'</div><div class="travel-stat-label">Deel Deadline</div></div></div>';
   document.getElementById('travelSection').innerHTML='<div class="travel-block"><div class="travel-header"><div class="dot" style="background:var(--travel)"></div><div class="travel-title">Travel Claims</div><div style="margin-left:auto"><button class="add-btn" onclick="openModal(\'trip\')" style="border-color:var(--travel);color:var(--travel)">+ Log Trip</button></div></div>'+alertHTML+statsHTML+tripsHTML+'<div class="travel-footer"><span class="travel-note">Submit to Deel by 15th (soft) \u00b7 19th (hard deadline)</span></div></div>';
 }
-function renderAll(){renderSummary();renderWorklog();renderTasks();renderGrid();renderTravelClaims();}
+function renderAll(){renderSummary();renderWorklog();renderTabContent();renderTravelClaims();}
 function updateDate(){var now=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];document.getElementById('dateDisplay').textContent=days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();document.getElementById('weekDisplay').textContent='week '+getWeekKey(now).split('W')[1]+' of '+now.getFullYear();}
 </script>
 </body>
