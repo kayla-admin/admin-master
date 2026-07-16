@@ -9,7 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#0f0f0d;--surface:#1a1a16;--surface2:#222220;--surface3:#191917;--border:#2e2e28;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
+:root{--bg:#0f0f0d;--surface:#1a1a16;--surface2:#222220;--surface3:#191917;--border:#2e2e28;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;padding:2rem;}
 #loadingScreen,#authScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:1.25rem;}
@@ -260,6 +260,7 @@ footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);dis
 .tab-btn[data-tab="leadership"].active{background:var(--leadership);}
 .tab-btn[data-tab="ohs"].active{background:var(--ohs);}
 .tab-btn[data-tab="facilities"].active{background:var(--facilities);}
+.tab-btn[data-tab="events"].active{background:var(--events);}
 .filter-bar{display:flex;gap:.25rem;}
 .filter-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .65rem;border-radius:2px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;}
 .filter-btn:hover{color:var(--text);}
@@ -343,6 +344,7 @@ var TRIP_OFFICES=['Home','Menlyn Office','Bryanston Office','Durban Office','PE 
 var LOCATIONS=['Menlyn','Bryanston','Durban','PE','Cape Town'];
 var activeTab='all';var activeFilter='all';var searchQuery='';var _mDown=false;
 var CATEGORY_KEYWORDS={
+  events:['year end','yearend','beers and cheers','comic con','e-comm live','ecomm','indaba','activation','conference','launch event','year-end function','staff party'],
   people:['people','p&c','onboard','offboard','hr','staff','employee','birthday','leaver','starter','hire','gift'],
   expenses:['expense','finance','cost','budget','grocery','groceries','lunch','food','order','payment','invoice','vending','coffee','rusk','water','makro','slip'],
   leadership:['leadership','leader','meeting','breakaway','offsite','venue','merch','merchandise','function'],
@@ -596,9 +598,9 @@ function openModal(mode){
   else if(mode==='offboarding'){title.textContent='New Leaver';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. John Doe"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Last Day</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOffboarding()">Create Checklist</button></div>';}
   else if(mode==='task'){
     var precat=activeTab!=='all'?activeTab:'general';
-    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
+    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
     title.textContent='New Task';
-    body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
+    body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><div style="display:flex;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap">'+['Today','+ 1 Day','+ 3 Days','+ 7 Days'].map(function(l,i){var d=new Date();d.setDate(d.getDate()+[0,1,3,7][i]);var v=d.toISOString().slice(0,10);return'<button type="button" onclick="document.getElementById(\'mTaskDue\').value=\''+v+'\'" style="font-family:\'DM Mono\',monospace;font-size:.6rem;letter-spacing:.06em;padding:.25rem .6rem;border:1px solid var(--border);border-radius:2px;background:none;color:var(--muted);cursor:pointer">'+l+'</button>';}).join('')+'</div><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
   }
   else if(mode==='backdate'){
     var catOpts=['Expenses','People','Leadership','Facilities','Health & Safety','Other'].map(function(c){return'<option>'+c+'</option>';}).join('');
@@ -748,7 +750,7 @@ function catCardHTML(cat,ci){
   return'<div class="card '+cat.color+(isLast?' full':'')+'" style="animation-delay:'+(0.15+ci*0.08)+'s"><div class="card-header"><div class="dot"></div><div class="card-title">'+cat.label+'</div>'+ib+'</div><ul class="task-list">'+tasks+'</ul>'+extra+'<div class="progress-bar"><div class="progress-fill" style="width:'+p.pct+'%"></div></div><div class="progress-label">'+p.done+' of '+p.total+' done this period</div></div>';
 }
 function renderControlBar(){
-  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'}];
+  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'}];
   var tabsHTML=tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join('');
   var fLabels={all:'All',todo:'To Do',done:'Done',overdue:'Overdue',duesoon:'Due Soon'};
   var filtersHTML=['all','todo','done','overdue','duesoon'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'"'+(f==='overdue'?' style="border-color:var(--red);'+(activeFilter===f?'background:var(--red);color:var(--bg)':'color:var(--red)')+'"':f==='duesoon'?' style="border-color:var(--people);'+(activeFilter===f?'background:var(--people);color:var(--bg)':'color:var(--people)')+'"':'')+' onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
@@ -787,6 +789,8 @@ function renderTabContent(){
   if(activeTab==='all'){
     html+=tasksHTML('all');
     html+='<div class="grid">'+categories.map(function(cat,ci){return catCardHTML(cat,ci);}).join('')+'</div>';
+  } else if(activeTab==='events'){
+    html+=tasksHTML('events');
   } else {
     var cat=categories.find(function(c){return c.id===activeTab;});
     if(cat)html+='<div class="grid single-tab">'+catCardHTML(cat,0)+'</div>';
