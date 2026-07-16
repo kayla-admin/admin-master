@@ -127,6 +127,7 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .worklog-day-header{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.25rem 0;border-bottom:1px solid var(--border);margin-bottom:.4rem;}
 .worklog-entry{display:flex;align-items:center;gap:.75rem;padding:.45rem .6rem;background:var(--surface2);border:1px solid var(--border);border-radius:2px;margin-bottom:.3rem;}
 .worklog-entry.is-step{padding-left:1.5rem;border-left:2px solid var(--leadership);background:var(--surface3);}
+.wl-del-btn{margin-left:auto;flex-shrink:0;background:none;border:none;color:transparent;cursor:pointer;font-size:.65rem;padding:.1rem .3rem;border-radius:2px;transition:color .15s;}.worklog-entry:hover .wl-del-btn{color:var(--muted);}.wl-del-btn:hover{color:var(--red)!important;}
 .wl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .wl-dot.recurring{background:var(--muted);}.wl-dot.task{background:var(--leadership);}.wl-dot.taskstep{background:var(--leadership);opacity:.6;}.wl-dot.people{background:var(--people);}
 .wl-name{font-size:.72rem;color:var(--text);flex:1;line-height:1.3;}
@@ -463,6 +464,7 @@ function restoreOpenSubs(ids){for(var i=0;i<ids.length;i++){var l=document.getEl
 function getOpenPersons(){var open=[];var els=document.querySelectorAll('[id^="psteps_"]');for(var i=0;i<els.length;i++){if(els[i].classList.contains('open'))open.push(els[i].id.slice(7));}return open;}
 function restoreOpenPersons(ids){for(var i=0;i<ids.length;i++){var s=document.getElementById('psteps_'+ids[i]);var c=document.getElementById('pchev_'+ids[i]);if(s)s.classList.add('open');if(c)c.classList.add('open');}}
 // WORKLOG
+function deleteWorklogEntry(id){var fs=getFS();fs.worklog=fs.worklog.filter(function(e){return e.id!==id;});saveFS(Object.assign({},fs));}
 function logCompletion(name,category,createdTs,completedTs,extra){
   var fs=getFS();if(!fs.worklog)fs.worklog=[];
   var entry={id:uid(),name:name,category:category,created:createdTs||completedTs,completed:completedTs};
@@ -821,7 +823,7 @@ function renderWorklog(){
     var statsHTML='<div class="wl-stats-row"><div class="wl-stat"><div class="wl-stat-num">'+count+'</div><div class="wl-stat-label">Total Done</div></div><div class="wl-stat"><div class="wl-stat-num">'+recurring+'</div><div class="wl-stat-label">Recurring</div></div><div class="wl-stat"><div class="wl-stat-num">'+tasks+'</div><div class="wl-stat-label">Task Steps</div></div><div class="wl-stat"><div class="wl-stat-num">'+people+'</div><div class="wl-stat-label">People</div></div></div>';
     var logHTML='';var dayKeys=Object.keys(byDay);
     if(!dayKeys.length){logHTML='<div class="worklog-empty">Nothing logged for this period.</div>';}
-    else{dayKeys.forEach(function(dk){logHTML+='<div class="worklog-day"><div class="worklog-day-header">'+dayLabel(new Date(dk))+'</div>';byDay[dk].forEach(function(e){var isStep=e.category==='taskstep';var ct=isStep?'taskstep':e.category&&e.category.indexOf('recurring:')===0?'recurring':e.category==='people'?'people':'task';var dur=fmtDuration(e.completed-e.created);logHTML+='<div class="worklog-entry'+(isStep?' is-step':'')+'"><div class="wl-dot '+ct+'"></div>'+(isStep&&e.taskName?'<span class="wl-parent">'+e.taskName+':</span>':'')+'<span class="wl-name">'+e.name+'</span><span class="wl-time">'+fmtTime(e.completed)+'</span>'+(dur?'<span class="wl-dur">'+dur+'</span>':'')+'</div>';});logHTML+='</div>';});}
+    else{dayKeys.forEach(function(dk){logHTML+='<div class="worklog-day"><div class="worklog-day-header">'+dayLabel(new Date(dk))+'</div>';byDay[dk].forEach(function(e){var isStep=e.category==='taskstep';var ct=isStep?'taskstep':e.category&&e.category.indexOf('recurring:')===0?'recurring':e.category==='people'?'people':'task';var dur=fmtDuration(e.completed-e.created);logHTML+='<div class="worklog-entry'+(isStep?' is-step':'')+'"><div class="wl-dot '+ct+'"></div>'+(isStep&&e.taskName?'<span class="wl-parent">'+e.taskName+':</span>':'')+'<span class="wl-name">'+e.name+'</span><span class="wl-time">'+fmtTime(e.completed)+'</span>'+(dur?'<span class="wl-dur">'+dur+'</span>':'')+'<button class="wl-del-btn" onclick="deleteWorklogEntry(\''+e.id+'\')" title="Remove entry">&#x2715;</button></div>';});logHTML+='</div>';});}
     var navLabel=periodLabel;
     bodyHTML='<div class="worklog-body open">'+
       '<div class="wl-controls">'+
