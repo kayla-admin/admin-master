@@ -671,7 +671,6 @@ var categories=[
   {id:'expenses',label:'Expenses',color:'expenses',tasks:[
     {text:'Weekly groceries',freq:'weekly',subs:[{text:'Menlyn',note:'physical shopping'},{text:'Bryanston',note:'online \u2014 order Wed, delivers Mon'}]},
     {text:'Monthly groceries \u2014 Makro orders',freq:'monthly',subs:[{text:'Menlyn office',note:'Makro'},{text:'Bryanston office',note:'Makro'},{text:'Durban',note:'Makro'},{text:'PE',note:'Makro'},{text:'Cape Town',note:'WFH \u2014 hold for warehouse'}]},
-    {text:'Monthly lunch',freq:'monthly',subs:[{text:'Menlyn',note:'organise'},{text:'Bryanston',note:'organise'},{text:'Durban',note:'organise'},{text:'PE',note:'organise'},{text:'Cape Town',note:'WFH \u2014 hold for warehouse'}]},
     {text:'Vending machine restock \u2014 Menlyn',freq:'daily'},
     {text:'Leadership meeting snacks (Thursdays 12:30)',freq:'weekly',subs:[
       {text:'Monday: Post on #very-important-plates \u2014 options & menu',note:'Slack'},
@@ -726,6 +725,15 @@ var categories=[
     {text:'Repairs / light bulbs actioned',freq:'manual'},
     {text:'Renovation coordination in progress',freq:'manual'},
     {text:'Ad hoc workers organised',freq:'manual'},
+  ]},
+  {id:'events',label:'Events',color:'events',tasks:[
+    {text:'Beers & Cheers',freq:'monthly',subs:[
+      {text:'Bryanston — in-office event'},
+      {text:'Menlyn — in-office event'},
+      {text:'Cape Town warehouse — send chips & beers'},
+      {text:'Durban warehouse — send chips & beers'},
+      {text:'PE warehouse — send chips & beers'},
+    ]},
   ]},
 ];
 // RENDER
@@ -789,8 +797,6 @@ function renderTabContent(){
   if(activeTab==='all'){
     html+=tasksHTML('all');
     html+='<div class="grid">'+categories.map(function(cat,ci){return catCardHTML(cat,ci);}).join('')+'</div>';
-  } else if(activeTab==='events'){
-    html+=tasksHTML('events');
   } else {
     var cat=categories.find(function(c){return c.id===activeTab;});
     if(cat)html+='<div class="grid single-tab">'+catCardHTML(cat,0)+'</div>';
