@@ -499,7 +499,7 @@ function deletePerson(type,id){if(!confirm('Remove this checklist?'))return;var 
 function deletePersonStep(type,id,si){var fs=getFS();var list=type==='on'?fs.onboardings:fs.offboardings;var inst=list.find(function(i){return i.id===id;});if(inst&&inst.steps.length>1){inst.steps.splice(si,1);saveFS(Object.assign({},fs));}}
 function togglePersonExpand(id){var s=document.getElementById('psteps_'+id);var c=document.getElementById('pchev_'+id);if(!s)return;s.classList.toggle('open');if(c)c.classList.toggle('open');}
 // AD-HOC TASKS
-function createTask(name,steps,category){var fs=getFS();if(!fs.projects)fs.projects=[];fs.projects.push({id:uid(),name:name,steps:steps.map(function(s){return{text:s,done:false};}),archived:false,created:Date.now(),category:category||'general'});saveFS(Object.assign({},fs));}
+function createTask(name,steps,category,dueDate){var fs=getFS();if(!fs.projects)fs.projects=[];fs.projects.push({id:uid(),name:name,steps:steps.map(function(s){return{text:s,done:false};}),archived:false,created:Date.now(),category:category||'general',dueDate:dueDate||null});saveFS(Object.assign({},fs));}
 function removeWorklogEntry(fs,matchFn){if(fs.worklog){var removed=false;fs.worklog=fs.worklog.filter(function(e){if(!removed&&matchFn(e)){removed=true;return false;}return true;});}}
 function toggleTaskStep(id,si){
   var fs=getFS();var proj=fs.projects.find(function(p){return p.id===id;});if(!proj)return;
@@ -557,6 +557,12 @@ function editTask(id){
     row.appendChild(inp);row.appendChild(btn);slist.appendChild(row);
   };
   sg.appendChild(sl);sg.appendChild(slist);sg.appendChild(addBtn);body.appendChild(sg);
+  // Due date field
+  var dg=document.createElement('div');dg.className='form-group';
+  var dl=document.createElement('label');dl.className='form-label';dl.textContent='Due Date';
+  var ds=document.createElement('span');ds.style.cssText='opacity:.5;font-size:.9em';ds.textContent=' (optional)';dl.appendChild(ds);
+  var di=document.createElement('input');di.className='form-input';di.id='mTaskDue';di.type='date';di.value=proj.dueDate||'';
+  dg.appendChild(dl);dg.appendChild(di);body.appendChild(dg);
   // Actions
   var actions=document.createElement('div');actions.className='modal-actions';
   var cancelBtn=document.createElement('button');cancelBtn.className='modal-btn secondary';cancelBtn.textContent='Cancel';cancelBtn.onclick=closeModal;
@@ -572,6 +578,7 @@ function saveEditTask(id){
   if(!steps.length)steps.push('Complete');
   var fs=getFS();var proj=fs.projects.find(function(p){return p.id===id;});if(!proj)return;
   proj.name=name;proj.steps=steps.map(function(s,i){var prev=proj.steps[i];return{text:s,done:prev?!!prev.done:false,doneTs:prev&&prev.doneTs?prev.doneTs:null};});
+  var dueInput=document.getElementById('mTaskDue');proj.dueDate=dueInput&&dueInput.value?dueInput.value:null;
   saveFS(Object.assign({},fs));closeModal();
 }
 // TRAVEL
@@ -591,7 +598,7 @@ function openModal(mode){
     var precat=activeTab!=='all'?activeTab:'general';
     var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
     title.textContent='New Task';
-    body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
+    body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
   }
   else if(mode==='backdate'){
     var catOpts=['Expenses','People','Leadership','Facilities','Health & Safety','Other'].map(function(c){return'<option>'+c+'</option>';}).join('');
@@ -605,7 +612,7 @@ function addStepInput(){var list=document.getElementById('stepsInputList');var n
 function removeStepInput(btn){var row=btn.parentElement;if(row.parentElement.children.length>1)row.remove();}
 function submitOnboarding(){var name=document.getElementById('mName').value.trim();if(!name)return;closeModal();createOnboarding(name,document.getElementById('mLoc').value,document.getElementById('mDate').value);}
 function submitOffboarding(){var name=document.getElementById('mName').value.trim();if(!name)return;closeModal();createOffboarding(name,document.getElementById('mLoc').value,document.getElementById('mDate').value);}
-function submitTask(){var name=document.getElementById('mProjName').value.trim();if(!name)return;var inputs=document.getElementById('stepsInputList').querySelectorAll('input');var steps=[];inputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});if(!steps.length)steps.push('Complete');var cat=document.getElementById('mTaskCat')?document.getElementById('mTaskCat').value:'general';closeModal();createTask(name,steps,cat);}
+function submitTask(){var name=document.getElementById('mProjName').value.trim();if(!name)return;var inputs=document.getElementById('stepsInputList').querySelectorAll('input');var steps=[];inputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});if(!steps.length)steps.push('Complete');var cat=document.getElementById('mTaskCat')?document.getElementById('mTaskCat').value:'general';var due=document.getElementById('mTaskDue')?document.getElementById('mTaskDue').value:'';closeModal();createTask(name,steps,cat,due||null);}
 function submitBackdate(){var name=document.getElementById('mBdName').value.trim();if(!name){document.getElementById('mBdName').focus();return;}var cat=document.getElementById('mBdCat').value;var dateStr=document.getElementById('mBdDate').value;var timeStr=document.getElementById('mBdTime').value||'09:00';if(!dateStr){document.getElementById('mBdDate').focus();return;}var dt=new Date(dateStr+'T'+timeStr);var ts=dt.getTime();var fs=getFS();if(!fs.worklog)fs.worklog=[];fs.worklog.push({id:uid(),name:name,category:'recurring:'+cat,created:ts-300000,completed:ts});saveFS(Object.assign({},fs));closeModal();}
 // EXPORT
 var wlFilter='week';
@@ -743,8 +750,8 @@ function catCardHTML(cat,ci){
 function renderControlBar(){
   var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'}];
   var tabsHTML=tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join('');
-  var fLabels={all:'All',todo:'To Do',done:'Done'};
-  var filtersHTML=['all','todo','done'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'" onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
+  var fLabels={all:'All',todo:'To Do',done:'Done',overdue:'Overdue',duesoon:'Due Soon'};
+  var filtersHTML=['all','todo','done','overdue','duesoon'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'"'+(f==='overdue'?' style="border-color:var(--red);'+(activeFilter===f?'background:var(--red);color:var(--bg)':'color:var(--red)')+'"':f==='duesoon'?' style="border-color:var(--people);'+(activeFilter===f?'background:var(--people);color:var(--bg)':'color:var(--people)')+'"':'')+' onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
   document.getElementById('controlBar').innerHTML='<div class="control-bar"><div class="search-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" id="searchInput" placeholder="Search tasks\u2026" oninput="onSearch(this.value)" value="'+searchQuery.replace(/"/g,'&quot;')+'"/>'+(searchQuery?'<button class="search-clear" onclick="clearSearch()">\u2715</button>':'')+'</div><div class="tab-filter-row"><div class="tab-bar">'+tabsHTML+'</div><div class="filter-bar">'+filtersHTML+'</div></div></div>';
 }
 function tasksHTML(catFilter){
@@ -755,6 +762,7 @@ function tasksHTML(catFilter){
     var allDone=p.steps.every(function(s){return s.done;});
     if(activeFilter==='todo'&&allDone)return false;
     if(activeFilter==='done'&&!allDone)return false;
+    if(activeFilter==='overdue'||activeFilter==='duesoon'){if(!p.dueDate||allDone)return false;var due=new Date(p.dueDate);due.setHours(23,59,59,999);var now=new Date();var diff=(due-now)/(1000*60*60*24);if(activeFilter==='overdue'&&diff>=0)return false;if(activeFilter==='duesoon'&&(diff<0||diff>7))return false;}
     if(searchQuery){var m=p.name.toLowerCase().indexOf(searchQuery)!==-1;if(!m)m=p.steps.some(function(s){return s.text.toLowerCase().indexOf(searchQuery)!==-1;});if(!m)return false;}
     return true;
   });
@@ -765,8 +773,9 @@ function tasksHTML(catFilter){
     var dc=proj.steps.filter(function(s){return s.done;}).length;var total=proj.steps.length;var pct=Math.round(dc/total*100);var allDone=dc===total;
     var pc=proj.category&&proj.category!=='general'?proj.category:null;
     var catBadge=pc?'<span style="font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--'+pc+');padding:.1rem .35rem;border:1px solid currentColor;border-radius:2px;opacity:.75;display:inline-block;margin-top:.2rem">'+pc+'</span>':'';
+    var dueBadge='';if(proj.dueDate&&!allDone){var due=new Date(proj.dueDate);due.setHours(23,59,59,999);var now=new Date();var diff=(due-now)/(1000*60*60*24);var dueCol=diff<0?'var(--red)':diff<=2?'var(--expenses)':'var(--muted)';var dueLabel=diff<0?'Overdue':diff<1?'Due today':diff<=2?'Due in '+Math.ceil(diff)+'d':'Due '+proj.dueDate;dueBadge='<span style="font-size:.52rem;letter-spacing:.06em;color:'+dueCol+';padding:.1rem .35rem;border:1px solid currentColor;border-radius:2px;display:inline-block;margin-top:.2rem;margin-left:.3rem">'+dueLabel+'</span>';}
     var steps=proj.steps.map(function(step,si){return'<li class="task-step'+(step.done?' done':'')+'" onclick="toggleTaskStep(\''+proj.id+'\','+si+')"><div class="pstep-cb"></div><span class="pstep-text">'+step.text+'</span></li>';}).join('');
-    return'<div class="task-card"><div class="task-card-header"><div style="flex:1"><div class="task-card-name">'+proj.name+'</div>'+catBadge+'</div><div class="task-card-actions"><button class="icon-btn" onclick="editTask(\''+proj.id+'\')" title="Edit">\u270e</button><button class="icon-btn del" onclick="deleteTask(\''+proj.id+'\')" title="Delete">&#x2715;</button></div></div><div class="task-card-ts">added '+fmtTs(proj.created)+'</div><div class="task-prog-bar"><div class="task-prog-fill" style="width:'+pct+'%"></div></div><ul class="task-step-list">'+steps+'</ul><div class="task-card-footer"><span class="task-prog-label">'+dc+' / '+total+' steps</span>'+(allDone?'<button class="archive-btn" onclick="archiveTask(\''+proj.id+'\')">Done \u2713</button>':'')+'</div></div>';
+    return'<div class="task-card"><div class="task-card-header"><div style="flex:1"><div class="task-card-name">'+proj.name+'</div>'+catBadge+dueBadge+'</div><div class="task-card-actions"><button class="icon-btn" onclick="editTask(\''+proj.id+'\')" title="Edit">\u270e</button><button class="icon-btn del" onclick="deleteTask(\''+proj.id+'\')" title="Delete">&#x2715;</button></div></div><div class="task-card-ts">added '+fmtTs(proj.created)+'</div><div class="task-prog-bar"><div class="task-prog-fill" style="width:'+pct+'%"></div></div><ul class="task-step-list">'+steps+'</ul><div class="task-card-footer"><span class="task-prog-label">'+dc+' / '+total+' steps</span>'+(allDone?'<button class="archive-btn" onclick="archiveTask(\''+proj.id+'\')">Done \u2713</button>':'')+'</div></div>';
   }).join('')+'</div>':'';
   var archH=archived.length?'<button class="show-archived-btn" onclick="toggleArchivedTasks()">\u25b6 '+archived.length+' archived</button><div id="archivedTasks" style="display:none"></div>':'';
   var emptyMsg=!active.length?'<div class="tasks-empty" style="margin-top:.75rem">'+(searchQuery||activeFilter!=='all'?'No tasks match the current filter.':'Nothing on the plate. Hit + New Task when something lands.')+'</div>':'';
