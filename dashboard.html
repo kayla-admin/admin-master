@@ -504,7 +504,7 @@ function togglePersonStep(type,id,si){
     saveFS(Object.assign({},fs));
   }
 }
-function archivePerson(type,id){var fs=getFS();var list=type==='on'?fs.onboardings:fs.offboardings;var inst=list.find(function(i){return i.id===id;});if(inst)inst.archived=true;saveFS(Object.assign({},fs));}
+function archivePerson(type,id){var fs=getFS();var list=type==='on'?fs.onboardings:fs.offboardings;var inst=list.find(function(i){return i.id===id;});if(!inst)return;inst.archived=true;if(!inst.completedTs){inst.completedTs=Date.now();logCompletion((type==='on'?'Onboarding':'Offboarding')+': '+inst.name,'people',inst.created,inst.completedTs);}else{saveFS(Object.assign({},fs));}}
 function deletePerson(type,id){if(!confirm('Remove this checklist?'))return;var fs=getFS();if(type==='on'){fs.onboardings=fs.onboardings.filter(function(i){return i.id!==id;});}else{fs.offboardings=fs.offboardings.filter(function(i){return i.id!==id;});}saveFS(Object.assign({},fs));}
 function deletePersonStep(type,id,si){var fs=getFS();var list=type==='on'?fs.onboardings:fs.offboardings;var inst=list.find(function(i){return i.id===id;});if(inst&&inst.steps.length>1){inst.steps.splice(si,1);saveFS(Object.assign({},fs));}}
 function togglePersonExpand(id){var s=document.getElementById('psteps_'+id);var c=document.getElementById('pchev_'+id);if(!s)return;s.classList.toggle('open');if(c)c.classList.toggle('open');}
