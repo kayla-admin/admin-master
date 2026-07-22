@@ -487,9 +487,17 @@ function createOffboarding(name,location,lastDay){var fs=getFS();if(!fs.offboard
 function togglePersonStep(type,id,si){
   var fs=getFS();var list=type==='on'?fs.onboardings:fs.offboardings;
   var inst=list.find(function(i){return i.id===id;});if(!inst)return;
-  inst.steps[si].done=!inst.steps[si].done;
+  var step=inst.steps[si];var now=Date.now();
+  step.done=!step.done;
+  if(step.done){
+    step.doneTs=now;
+    logCompletion(step.text,'peoplestep',inst.created,now,{personId:inst.id,personName:inst.name});
+  } else {
+    delete step.doneTs;
+    removeWorklogEntry(fs,function(e){return e.category==='peoplestep'&&e.name===step.text&&e.personId===inst.id;});
+  }
   var allDone=inst.steps.every(function(s){return s.done;});
-  if(allDone&&!inst.completedTs){inst.completedTs=Date.now();logCompletion((type==='on'?'Onboarding':'Offboarding')+': '+inst.name,'people',inst.created,inst.completedTs);}
+  if(allDone&&!inst.completedTs){inst.completedTs=now;logCompletion((type==='on'?'Onboarding':'Offboarding')+': '+inst.name,'people',inst.created,now);}
   else{
     if(inst.completedTs){var label=(type==='on'?'Onboarding':'Offboarding')+': '+inst.name;removeWorklogEntry(fs,function(e){return e.category==='people'&&e.name===label;});}
     inst.completedTs=null;
@@ -819,6 +827,7 @@ function renderPersonInstance(type,inst){
     '<span class="person-instance-name">'+inst.name+'</span>'+
     '<span class="person-instance-badge '+(type==='on'?'on':'off')+'">'+(type==='on'?'onboarding':'offboarding')+'</span>'+
     '<span class="person-instance-progress">'+dc+'/'+total+'</span>'+
+    (allDone?'<button class="archive-btn" onclick="event.stopPropagation();archivePerson(\''+type+'\',\''+inst.id+'\')" style="margin-left:.5rem">Done ✓</button>':'')+
     '<button onclick="event.stopPropagation();deletePerson(\''+type+'\',\''+inst.id+'\')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.6rem;padding:.2rem .4rem;margin-left:.4rem" onmouseover="this.style.color=\'var(--red)\'" onmouseout="this.style.color=\'var(--muted)\'">&#x2715; delete</button>'+
     '</div>'+
     '<div class="pi-prog-bar"><div class="pi-prog-fill" style="width:'+pct+'%"></div></div>'+
