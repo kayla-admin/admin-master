@@ -587,7 +587,7 @@ function saveEditTask(id){
   var steps=[];inputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});
   if(!steps.length)steps.push('Complete');
   var fs=getFS();var proj=fs.projects.find(function(p){return p.id===id;});if(!proj)return;
-  proj.name=name;proj.steps=steps.map(function(s,i){var prev=proj.steps[i];return{text:s,done:prev?!!prev.done:false,doneTs:prev&&prev.doneTs?prev.doneTs:null};});
+  proj.name=name;var oldSteps=proj.steps.slice();proj.steps=steps.map(function(s){var prev=oldSteps.find(function(p){return p.text===s;});return{text:s,done:prev?!!prev.done:false,doneTs:prev&&prev.doneTs?prev.doneTs:null};});
   var dueInput=document.getElementById('mTaskDue');proj.dueDate=dueInput&&dueInput.value?dueInput.value:null;
   saveFS(Object.assign({},fs));closeModal();
 }
