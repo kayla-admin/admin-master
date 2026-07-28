@@ -626,6 +626,14 @@ function editTask(id){
   var ds=document.createElement('span');ds.style.cssText='opacity:.5;font-size:.9em';ds.textContent=' (optional)';dl.appendChild(ds);
   var di=document.createElement('input');di.className='form-input';di.id='mTaskDue';di.type='date';di.value=proj.dueDate||'';
   dg.appendChild(dl);dg.appendChild(di);body.appendChild(dg);
+  // Category field
+  var cg=document.createElement('div');cg.className='form-group';
+  var cl=document.createElement('label');cl.className='form-label';cl.textContent='Category';
+  var cs=document.createElement('select');cs.className='form-select';cs.id='mTaskCategory';
+  [['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events']].forEach(function(opt){
+    var o=document.createElement('option');o.value=opt[0];o.textContent=opt[1];if((proj.category||'general')===opt[0])o.selected=true;cs.appendChild(o);
+  });
+  cg.appendChild(cl);cg.appendChild(cs);body.appendChild(cg);
   // Actions
   var actions=document.createElement('div');actions.className='modal-actions';
   var cancelBtn=document.createElement('button');cancelBtn.className='modal-btn secondary';cancelBtn.textContent='Cancel';cancelBtn.onclick=closeModal;
@@ -642,6 +650,7 @@ function saveEditTask(id){
   var fs=getFS();var proj=fs.projects.find(function(p){return p.id===id;});if(!proj)return;
   proj.name=name;var oldSteps=proj.steps.slice();proj.steps=steps.map(function(s){var prev=oldSteps.find(function(p){return p.text===s;});return{text:s,done:prev?!!prev.done:false,doneTs:prev&&prev.doneTs?prev.doneTs:null};});
   var dueInput=document.getElementById('mTaskDue');proj.dueDate=dueInput&&dueInput.value?dueInput.value:null;
+  var catInput=document.getElementById('mTaskCategory');if(catInput)proj.category=catInput.value;
   saveFS(Object.assign({},fs));closeModal();
 }
 // TRAVEL
