@@ -266,6 +266,34 @@ footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);dis
 .filter-btn:hover{color:var(--text);}
 .filter-btn.active{background:var(--surface2);color:var(--text);border-color:var(--muted);}
 .grid.single-tab{grid-template-columns:1fr;}
+/* ── VISUAL ENHANCEMENTS ── */
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}::-webkit-scrollbar-thumb:hover{background:var(--muted);}
+/* Dot grid bg */
+body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1px);background-size:28px 28px;}
+/* Card coloured top border + hover glow */
+.card{transition:box-shadow .3s,transform .25s;}
+.card.people{border-top:2px solid var(--people);}.card.expenses{border-top:2px solid var(--expenses);}.card.leadership{border-top:2px solid var(--leadership);}.card.ohs{border-top:2px solid var(--ohs);}.card.facilities{border-top:2px solid var(--facilities);}.card.events{border-top:2px solid var(--events);}
+.card.people:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(201,169,110,.12);}
+.card.expenses:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(126,184,154,.12);}
+.card.leadership:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(168,155,201,.12);}
+.card.ohs:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(201,122,122,.12);}
+.card.facilities:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(122,175,201,.12);}
+.card.events:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(201,122,171,.12);}
+/* Summary tile coloured bottom border + hover lift */
+.summary-card{transition:transform .2s,box-shadow .2s;}
+.summary-card:hover{transform:translateY(-2px);}
+.summary-card.people{border-bottom:2px solid var(--people);}.summary-card.expenses{border-bottom:2px solid var(--expenses);}.summary-card.leadership{border-bottom:2px solid var(--leadership);}.summary-card.ohs{border-bottom:2px solid var(--ohs);}.summary-card.facilities{border-bottom:2px solid var(--facilities);}.summary-card.events{border-bottom:2px solid var(--events);}
+/* Dot glow in card headers */
+.people .dot{box-shadow:0 0 7px var(--people);}.expenses .dot{box-shadow:0 0 7px var(--expenses);}.leadership .dot{box-shadow:0 0 7px var(--leadership);}.ohs .dot{box-shadow:0 0 7px var(--ohs);}.facilities .dot{box-shadow:0 0 7px var(--facilities);}.events .dot{box-shadow:0 0 7px var(--events);}
+/* Progress bar — taller + glow */
+.progress-bar{height:3px;}
+.progress-fill{transition:width .7s cubic-bezier(.34,1.56,.64,1);}
+.people .progress-fill{box-shadow:0 0 8px var(--people);}.expenses .progress-fill{box-shadow:0 0 8px var(--expenses);}.leadership .progress-fill{box-shadow:0 0 8px var(--leadership);}.ohs .progress-fill{box-shadow:0 0 8px var(--ohs);}.facilities .progress-fill{box-shadow:0 0 8px var(--facilities);}.events .progress-fill{box-shadow:0 0 8px var(--events);}
+/* Task card hover lift */
+.task-card{transition:box-shadow .25s,transform .2s;}.task-card:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,0,0,.35);}
+/* Modal backdrop blur */
+.modal-overlay{backdrop-filter:blur(4px);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 @media(max-width:800px){.grid{grid-template-columns:1fr;}.card.full{grid-column:1;}.summary-row{grid-template-columns:repeat(3,1fr);}.header-left h1{font-size:1.8rem;}.tasks-inner-grid{grid-template-columns:1fr 1fr;}.wl-stats-row{grid-template-columns:1fr 1fr;}.tasks-summary-row,.travel-stats{grid-template-columns:1fr 1fr 1fr;}}
 </style>
@@ -891,6 +919,38 @@ function renderTravelClaims(){
 }
 function renderAll(){renderSummary();renderWorklog();renderTabContent();renderTravelClaims();}
 function updateDate(){var now=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];document.getElementById('dateDisplay').textContent=days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();document.getElementById('weekDisplay').textContent='week '+getWeekKey(now).split('W')[1]+' of '+now.getFullYear();}
+// CLICK SPARK
+(function(){
+  var canvas=document.createElement('canvas');
+  canvas.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;';
+  document.body.appendChild(canvas);
+  var ctx=canvas.getContext('2d');var W,H;
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  var COLORS=['#c9a96e','#7eb89a','#a89bc9','#c97a7a','#7aafc9','#c97aab','#e8a87c','#f0ede6'];
+  var sparks=[];
+  document.addEventListener('click',function(e){
+    var c=COLORS[Math.floor(Math.random()*COLORS.length)];
+    for(var i=0;i<10;i++){
+      var a=(Math.PI*2/10)*i+(Math.random()-.5)*.5;
+      var sp=1.5+Math.random()*3;
+      sparks.push({x:e.clientX,y:e.clientY,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:1.5+Math.random()*2.5,life:1,color:c});
+    }
+  });
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=sparks.length-1;i>=0;i--){
+      var s=sparks[i];
+      ctx.globalAlpha=s.life*s.life;
+      ctx.fillStyle=s.color;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r*s.life,0,Math.PI*2);ctx.fill();
+      s.x+=s.vx;s.y+=s.vy;s.vy+=0.08;s.life-=0.045;
+      if(s.life<=0)sparks.splice(i,1);
+    }
+    ctx.globalAlpha=1;requestAnimationFrame(loop);
+  }
+  loop();
+})();
 </script>
 </body>
 </html>
