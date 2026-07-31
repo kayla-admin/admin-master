@@ -9,7 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#080807;--surface:#141412;--surface2:#1c1c1a;--surface3:#111110;--border:#2a2a24;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--housekeeping:#b8956a;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
+:root{--bg:#080807;--surface:#141412;--surface2:#1c1c1a;--surface3:#111110;--border:#2a2a24;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--housekeeping:#b8956a;--marketing:#7ec9b8;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;padding:2rem;}
 #loadingScreen,#authScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:1.25rem;}
@@ -46,7 +46,7 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem .75rem;text-align:center;}
 .summary-num{font-family:'DM Serif Display',serif;font-size:2rem;line-height:1;margin-bottom:.25rem;}
 .summary-label{font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.people .summary-num{color:var(--people);}.expenses .summary-num{color:var(--expenses);}.leadership .summary-num{color:var(--leadership);}.ohs .summary-num{color:var(--ohs);}.facilities .summary-num{color:var(--facilities);}.events .summary-num{color:var(--events);}.housekeeping .summary-num{color:var(--housekeeping);}
+.people .summary-num{color:var(--people);}.expenses .summary-num{color:var(--expenses);}.leadership .summary-num{color:var(--leadership);}.ohs .summary-num{color:var(--ohs);}.facilities .summary-num{color:var(--facilities);}.events .summary-num{color:var(--events);}.housekeeping .summary-num{color:var(--housekeeping);}.marketing .summary-num{color:var(--marketing);}.travel .summary-num{color:var(--travel);}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
 .card.full{grid-column:1/-1;}
@@ -81,11 +81,11 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .sub-checkbox{width:12px;height:12px;border:1px solid var(--border);border-radius:2px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .sub-text{font-size:.72rem;color:var(--text);flex:1;line-height:1.4;}
 .sub-note{font-size:.6rem;color:var(--muted);white-space:nowrap;}
-.people .dot{background:var(--people);}.expenses .dot{background:var(--expenses);}.leadership .dot{background:var(--leadership);}.ohs .dot{background:var(--ohs);}.facilities .dot{background:var(--facilities);}.events .dot{background:var(--events);}.housekeeping .dot{background:var(--housekeeping);}
-.people .task-item:hover{border-color:var(--people);}.expenses .task-item:hover{border-color:var(--expenses);}.leadership .task-item:hover{border-color:var(--leadership);}.ohs .task-item:hover{border-color:var(--ohs);}.facilities .task-item:hover{border-color:var(--facilities);}.events .task-item:hover{border-color:var(--events);}.housekeeping .task-item:hover{border-color:var(--housekeeping);}
+.people .dot{background:var(--people);}.expenses .dot{background:var(--expenses);}.leadership .dot{background:var(--leadership);}.ohs .dot{background:var(--ohs);}.facilities .dot{background:var(--facilities);}.events .dot{background:var(--events);}.housekeeping .dot{background:var(--housekeeping);}.marketing .dot{background:var(--marketing);}
+.people .task-item:hover{border-color:var(--people);}.expenses .task-item:hover{border-color:var(--expenses);}.leadership .task-item:hover{border-color:var(--leadership);}.ohs .task-item:hover{border-color:var(--ohs);}.facilities .task-item:hover{border-color:var(--facilities);}.events .task-item:hover{border-color:var(--events);}.housekeeping .task-item:hover{border-color:var(--housekeeping);}.marketing .task-item:hover{border-color:var(--marketing);}
 .progress-bar{height:2px;background:var(--border);border-radius:1px;margin-top:1.25rem;overflow:hidden;}
 .progress-fill{height:100%;border-radius:1px;transition:width .4s ease;}
-.people .progress-fill{background:var(--people);}.expenses .progress-fill{background:var(--expenses);}.leadership .progress-fill{background:var(--leadership);}.ohs .progress-fill{background:var(--ohs);}.facilities .progress-fill{background:var(--facilities);}.events .progress-fill{background:var(--events);}.housekeeping .progress-fill{background:var(--housekeeping);}
+.people .progress-fill{background:var(--people);}.expenses .progress-fill{background:var(--expenses);}.leadership .progress-fill{background:var(--leadership);}.ohs .progress-fill{background:var(--ohs);}.facilities .progress-fill{background:var(--facilities);}.events .progress-fill{background:var(--events);}.housekeeping .progress-fill{background:var(--housekeeping);}.marketing .progress-fill{background:var(--marketing);}
 .progress-label{font-size:.6rem;color:var(--muted);margin-top:.4rem;}
 .add-btn{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.3rem .6rem;border-radius:2px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;white-space:nowrap;}
 .add-btn:hover{color:var(--text);border-color:var(--muted);}
@@ -201,16 +201,19 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .travel-stat-num{font-family:'DM Serif Display',serif;font-size:1.5rem;line-height:1;margin-bottom:.15rem;color:var(--travel);}
 .travel-stat-label{font-size:.58rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
 .trip-list{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem;}
-.trip-item{display:flex;align-items:center;gap:.75rem;padding:.55rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:2px;}
+.trip-item{display:flex;align-items:flex-start;flex-wrap:wrap;gap:.4rem .75rem;padding:.55rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:2px;}
 .trip-date{font-size:.6rem;color:var(--muted);white-space:nowrap;flex-shrink:0;width:72px;}
 .trip-route{font-size:.75rem;color:var(--text);flex:1;}
 .trip-arrow{color:var(--muted);font-size:.7rem;flex-shrink:0;}
-.trip-notes{font-size:.6rem;color:var(--muted);flex-shrink:0;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.trip-notes{font-size:.6rem;color:var(--muted);flex-shrink:0;max-width:200px;word-break:break-word;white-space:normal;}
 .trip-del{background:none;border:none;color:var(--border);cursor:pointer;font-size:.75rem;padding:.2rem;transition:color .2s;flex-shrink:0;}
 .trip-del:hover{color:var(--red);}
 .trip-empty{font-size:.72rem;color:var(--muted);padding:.5rem 0;}
 .travel-footer{display:flex;align-items:center;justify-content:space-between;padding-top:.75rem;border-top:1px solid var(--border);}
 .travel-note{font-size:.6rem;color:var(--muted);}
+.travel-archive-batch{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.travel-archive-batch:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.travel-archive-label{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;}
 .modal-overlay.hidden{display:none;}
@@ -285,7 +288,7 @@ header{position:sticky;top:0;z-index:50;background:var(--bg);padding-bottom:1.25
 .tab-btn[data-tab="leadership"].active{background:var(--leadership);}
 .tab-btn[data-tab="ohs"].active{background:var(--ohs);}
 .tab-btn[data-tab="facilities"].active{background:var(--facilities);}
-.tab-btn[data-tab="events"].active{background:var(--events);}.tab-btn[data-tab="housekeeping"].active{background:var(--housekeeping);}
+.tab-btn[data-tab="events"].active{background:var(--events);}.tab-btn[data-tab="housekeeping"].active{background:var(--housekeeping);}.tab-btn[data-tab="marketing"].active{background:var(--marketing);}
 .filter-bar{display:flex;gap:.25rem;}
 .filter-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .65rem;border-radius:2px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;}
 .filter-btn:hover{color:var(--text);}
@@ -314,13 +317,13 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 /* Summary tile coloured bottom border + hover lift */
 .summary-card{transition:transform .2s,box-shadow .2s;}
 .summary-card:hover{transform:translateY(-2px);}
-.summary-card.people{border-bottom:2px solid var(--people);}.summary-card.expenses{border-bottom:2px solid var(--expenses);}.summary-card.leadership{border-bottom:2px solid var(--leadership);}.summary-card.ohs{border-bottom:2px solid var(--ohs);}.summary-card.facilities{border-bottom:2px solid var(--facilities);}.summary-card.events{border-bottom:2px solid var(--events);}.summary-card.housekeeping{border-bottom:2px solid var(--housekeeping);}
+.summary-card.people{border-bottom:2px solid var(--people);}.summary-card.expenses{border-bottom:2px solid var(--expenses);}.summary-card.leadership{border-bottom:2px solid var(--leadership);}.summary-card.ohs{border-bottom:2px solid var(--ohs);}.summary-card.facilities{border-bottom:2px solid var(--facilities);}.summary-card.events{border-bottom:2px solid var(--events);}.summary-card.housekeeping{border-bottom:2px solid var(--housekeeping);}.summary-card.marketing{border-bottom:2px solid var(--marketing);}.summary-card.travel{border-bottom:2px solid var(--travel);}
 /* Dot glow in card headers */
-.people .dot{box-shadow:0 0 7px var(--people);}.expenses .dot{box-shadow:0 0 7px var(--expenses);}.leadership .dot{box-shadow:0 0 7px var(--leadership);}.ohs .dot{box-shadow:0 0 7px var(--ohs);}.facilities .dot{box-shadow:0 0 7px var(--facilities);}.events .dot{box-shadow:0 0 7px var(--events);}.housekeeping .dot{box-shadow:0 0 7px var(--housekeeping);}
+.people .dot{box-shadow:0 0 7px var(--people);}.expenses .dot{box-shadow:0 0 7px var(--expenses);}.leadership .dot{box-shadow:0 0 7px var(--leadership);}.ohs .dot{box-shadow:0 0 7px var(--ohs);}.facilities .dot{box-shadow:0 0 7px var(--facilities);}.events .dot{box-shadow:0 0 7px var(--events);}.housekeeping .dot{box-shadow:0 0 7px var(--housekeeping);}.marketing .dot{box-shadow:0 0 7px var(--marketing);}
 /* Progress bar — taller + glow */
 .progress-bar{height:3px;}
 .progress-fill{transition:width .7s cubic-bezier(.34,1.56,.64,1);}
-.people .progress-fill{box-shadow:0 0 8px var(--people);}.expenses .progress-fill{box-shadow:0 0 8px var(--expenses);}.leadership .progress-fill{box-shadow:0 0 8px var(--leadership);}.ohs .progress-fill{box-shadow:0 0 8px var(--ohs);}.facilities .progress-fill{box-shadow:0 0 8px var(--facilities);}.events .progress-fill{box-shadow:0 0 8px var(--events);}.housekeeping .progress-fill{box-shadow:0 0 8px var(--housekeeping);}
+.people .progress-fill{box-shadow:0 0 8px var(--people);}.expenses .progress-fill{box-shadow:0 0 8px var(--expenses);}.leadership .progress-fill{box-shadow:0 0 8px var(--leadership);}.ohs .progress-fill{box-shadow:0 0 8px var(--ohs);}.facilities .progress-fill{box-shadow:0 0 8px var(--facilities);}.events .progress-fill{box-shadow:0 0 8px var(--events);}.housekeeping .progress-fill{box-shadow:0 0 8px var(--housekeeping);}.marketing .progress-fill{box-shadow:0 0 8px var(--marketing);}
 /* Task card hover lift */
 .task-card{transition:box-shadow .25s,transform .2s;}.task-card:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,0,0,.35);}
 /* Modal backdrop blur */
@@ -390,6 +393,7 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
     <div class="sidebar-item" data-tab="worklog" style="--item-color:var(--muted)" onclick="sidebarNav('worklog')"><div class="sidebar-dot"></div><span class="sidebar-label">Work Log</span></div>
     <div class="sidebar-divider"></div>
     <div class="sidebar-item" data-tab="housekeeping" style="--item-color:var(--housekeeping)" onclick="sidebarNav('housekeeping')"><div class="sidebar-dot"></div><span class="sidebar-label">Housekeeping</span></div>
+    <div class="sidebar-item" data-tab="marketing" style="--item-color:var(--marketing)" onclick="sidebarNav('marketing')"><div class="sidebar-dot"></div><span class="sidebar-label">Marketing</span></div>
   </nav>
 </aside>
 <header>
@@ -414,7 +418,6 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 <div id="travelSection"></div>
 <footer>
   <div class="footer-note">Admin Master &middot; secured &middot; Kayla Morkel &middot; <span id="buildVer" style="opacity:.4">v54de474</span></div>
-  <button class="reset-btn" onclick="resetManualTasks()">clear manual tasks</button>
 </footer>
 </div>
 <div id="modalOverlay" class="modal-overlay hidden" onmousedown="if(event.target===this)_mDown=true" onmouseup="if(event.target===this&&_mDown)closeModal();_mDown=false;">
@@ -679,7 +682,7 @@ function editTask(id){
   var cg=document.createElement('div');cg.className='form-group';
   var cl=document.createElement('label');cl.className='form-label';cl.textContent='Category';
   var cs=document.createElement('select');cs.className='form-select';cs.id='mTaskCategory';
-  [['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events']].forEach(function(opt){
+  [['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing']].forEach(function(opt){
     var o=document.createElement('option');o.value=opt[0];o.textContent=opt[1];if((proj.category||'general')===opt[0])o.selected=true;cs.appendChild(o);
   });
   cg.appendChild(cl);cg.appendChild(cs);body.appendChild(cg);
@@ -717,12 +720,12 @@ function openModal(mode){
   else if(mode==='offboarding'){title.textContent='New Leaver';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. John Doe"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Last Day</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOffboarding()">Create Checklist</button></div>';}
   else if(mode==='task'){
     var precat=activeTab!=='all'?activeTab:'general';
-    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
+    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'},{v:'housekeeping',l:'Housekeeping'},{v:'travel',l:'Travel Claims'},{v:'marketing',l:'Marketing'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
     title.textContent='New Task';
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><div style="display:flex;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap">'+['Today','+ 1 Day','+ 3 Days','+ 7 Days'].map(function(l,i){var d=new Date();d.setDate(d.getDate()+[0,1,3,7][i]);var v=d.toISOString().slice(0,10);return'<button type="button" onclick="document.getElementById(\'mTaskDue\').value=\''+v+'\'" style="font-family:\'DM Mono\',monospace;font-size:.6rem;letter-spacing:.06em;padding:.25rem .6rem;border:1px solid var(--border);border-radius:2px;background:none;color:var(--muted);cursor:pointer">'+l+'</button>';}).join('')+'</div><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
   }
   else if(mode==='backdate'){
-    var catOpts=[['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events']].map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>';}).join('');
+    var catOpts=[['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing']].map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>';}).join('');
     title.textContent='Add Past Entry';
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mBdName" placeholder="e.g. Weekly groceries \u2014 Menlyn"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mBdCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="form-group"><label class="form-label">Date Completed</label><input class="form-input" id="mBdDate" type="date"/></div><div class="form-group"><label class="form-label">Time <span style="opacity:.5;font-size:.9em">(defaults to 09:00)</span></label><input class="form-input" id="mBdTime" type="time" value="09:00"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitBackdate()">Add Entry</button></div>';
   }
@@ -855,7 +858,7 @@ var categories=[
     {text:'Ad hoc workers organised',freq:'manual'},
   ]},
   {id:'events',label:'Events',color:'events',tasks:[
-    {text:'Beers & Cheers',freq:'monthly',subs:[
+    {text:'Beers & Cheers',freq:'manual',subs:[
       {text:'Bryanston — in-office event'},
       {text:'Menlyn — in-office event'},
       {text:'Cape Town warehouse — send chips & beers'},
@@ -864,10 +867,16 @@ var categories=[
     ]},
   ]},
   {id:'housekeeping',label:'Housekeeping',color:'housekeeping',tasks:[]},
+  {id:'marketing',label:'Marketing',color:'marketing',tasks:[]},
 ];
 // RENDER
 function getProgress(cat){var done=0;cat.tasks.forEach(function(t,ti){if(allSubsDone(cat,ti))done++;});return{done:done,total:cat.tasks.length,pct:cat.tasks.length?Math.round(done/cat.tasks.length*100):0};}
-function renderSummary(){document.getElementById('summaryRow').innerHTML=categories.map(function(cat){var p=getProgress(cat);return'<div class="summary-card '+cat.color+'"><div class="summary-num">'+p.done+'/'+p.total+'</div><div class="summary-label">'+cat.label+'</div></div>';}).join('');}
+function renderSummary(){
+  var catTiles=categories.map(function(cat){var p=getProgress(cat);return'<div class="summary-card '+cat.color+'" onclick="sidebarNav(\''+cat.id+'\')" style="cursor:pointer"><div class="summary-num">'+p.done+'/'+p.total+'</div><div class="summary-label">'+cat.label+'</div></div>';}).join('');
+  var fs=getFS();var batches=fs.travelBatches||[];var activeBatch=batches.find(function(b){return!b.submitted;})||{trips:[]};var tripCount=(activeBatch.trips||[]).length;
+  var travelTile='<div class="summary-card travel" onclick="sidebarNav(\'travel\')" style="cursor:pointer"><div class="summary-num">'+tripCount+'</div><div class="summary-label">Travel Claims</div></div>';
+  document.getElementById('summaryRow').innerHTML=catTiles+travelTile;
+}
 function catCardHTML(cat,ci){
   var p=getProgress(cat);
   var tasks=cat.tasks.map(function(task,ti){
@@ -888,7 +897,7 @@ function catCardHTML(cat,ci){
 }
 function renderControlBar(){
   var isOverview=activeTab==='all';
-  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'},{id:'housekeeping',label:'Housekeeping'}];
+  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'},{id:'housekeeping',label:'Housekeeping'},{id:'marketing',label:'Marketing'}];
   var tabsHTML=isOverview?tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join(''):'';
   var fLabels={all:'All',duesoon:'Due Soon',overdue:'Overdue',todo:'To Do',done:'Done'};
   var filtersHTML=['all','duesoon','overdue','todo','done'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'"'+(f==='overdue'?' style="border-color:var(--red);'+(activeFilter===f?'background:var(--red);color:var(--bg)':'color:var(--red)')+'"':f==='duesoon'?' style="border-color:var(--people);'+(activeFilter===f?'background:var(--people);color:var(--bg)':'color:var(--people)')+'"':'')+' onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
@@ -929,6 +938,11 @@ function renderTabContent(){
     html+='<div class="grid">'+categories.map(function(cat,ci){return catCardHTML(cat,ci);}).join('')+'</div>';
   } else if(activeTab==='travel'||activeTab==='worklog'){
     // handled by renderAll — just clear this area
+  } else if(activeTab==='marketing'){
+    var mcat=categories.find(function(c){return c.id==='marketing';});
+    if(mcat)html+='<div class="grid single-tab">'+catCardHTML(mcat,0)+'</div>';
+    html+='<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;opacity:.6">Marketing content coming soon</div>';
+    html+=tasksHTML('marketing');
   } else if(activeTab==='housekeeping'){
     var hcat=categories.find(function(c){return c.id==='housekeeping';});
     if(hcat)html+='<div class="grid single-tab">'+catCardHTML(hcat,0)+'</div>';
@@ -1003,20 +1017,35 @@ function renderTravelClaims(){
   var fs=getFS();var now=new Date();var day=now.getDate();
   var batches=fs.travelBatches||[];var activeBatch=batches.find(function(b){return!b.submitted;})||{trips:[],submitted:false};
   var trips=activeBatch.trips||[];trips.sort(function(a,b){return b.date-a.date;});
-  var lastSubmitted=null;var submitted=batches.filter(function(b){return b.submitted;});if(submitted.length)lastSubmitted=submitted[submitted.length-1];
+  var submittedBatches=batches.filter(function(b){return b.submitted;});
+  var lastSubmitted=submittedBatches.length?submittedBatches[submittedBatches.length-1]:null;
   var alertHTML='';
   if(lastSubmitted){alertHTML='<div class="travel-alert submitted">\u2713 '+(lastSubmitted.label||'Previous batch')+' submitted \u2014 logging new trips for next cycle.</div>';}
-  if(!activeBatch.submitted){
-    if(day>=15&&day<=19&&trips.length>0){alertHTML+='<div class="travel-alert warn">\u26a0\ufe0f Soft deadline \u2014 submit to your manager by the 15th.<button class="submit-btn" onclick="submitTravelBatch()">Mark as Submitted</button></div>';}
-    else if(day>19&&trips.length>0){alertHTML+='<div class="travel-alert urgent">\ud83d\udea8 Past the 19th! Submit to Deel NOW.<button class="submit-btn" onclick="submitTravelBatch()">Mark as Submitted</button></div>';}
+  if(!activeBatch.submitted&&trips.length>0){
+    // Only warn about deadline if the last submission wasn't in the current calendar month
+    var suppressWarning=false;
+    if(lastSubmitted&&lastSubmitted.submittedTs){var subD=new Date(lastSubmitted.submittedTs);suppressWarning=(subD.getFullYear()===now.getFullYear()&&subD.getMonth()===now.getMonth());}
+    if(!suppressWarning){
+      if(day>=15&&day<=19){alertHTML+='<div class="travel-alert warn">\u26a0\ufe0f Soft deadline \u2014 submit to your manager by the 15th.<button class="submit-btn" onclick="submitTravelBatch()">Mark as Submitted</button></div>';}
+      else if(day>19){alertHTML+='<div class="travel-alert urgent">\ud83d\udea8 Past the 19th! Submit to Deel NOW.<button class="submit-btn" onclick="submitTravelBatch()">Mark as Submitted</button></div>';}
+    }
   }
   var ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var totalKm=trips.reduce(function(s,t){return s+(t.km||0);},0);
   var tripsHTML=trips.length?'<ul class="trip-list">'+trips.map(function(t){return'<li class="trip-item"><span class="trip-date">'+fmtDate(t.date)+'</span><span class="trip-route">'+t.from+'</span><span class="trip-arrow">\u2192</span><span class="trip-route">'+t.to+'</span>'+(t.km?'<span class="trip-notes" style="color:var(--travel)">'+t.km+' km</span>':'')+(t.notes?'<span class="trip-notes">'+t.notes+'</span>':'')+'<button class="trip-del" onclick="deleteTrip(\''+t.id+'\')">\u00d7</button></li>';}).join('')+'</ul>':'<div class="trip-empty">No trips logged yet. Hit + Log Trip after every office visit.</div>';
-  var daysToSoft=day<15?15-day:0;var daysToHard=day<=19?19-day:0;
   var deadlineLabel=day<15?(15-day)+' days to soft deadline':day<=19?(19-day)+' days to hard deadline':'Submit now!';
   var statsHTML='<div class="travel-stats"><div class="travel-stat"><div class="travel-stat-num">'+trips.length+'</div><div class="travel-stat-label">Unsubmitted Trips</div></div><div class="travel-stat"><div class="travel-stat-num">'+ms[now.getMonth()]+'</div><div class="travel-stat-label">Current Cycle</div></div><div class="travel-stat"><div class="travel-stat-num" style="font-size:1rem;padding-top:.3rem">'+deadlineLabel+'</div><div class="travel-stat-label">Deel Deadline</div></div></div>';
-  document.getElementById('travelSection').innerHTML='<div class="travel-block"><div class="travel-header"><div class="dot" style="background:var(--travel)"></div><div class="travel-title">Travel Claims</div><div style="margin-left:auto"><button class="add-btn" onclick="openModal(\'trip\')" style="border-color:var(--travel);color:var(--travel)">+ Log Trip</button></div></div>'+alertHTML+statsHTML+tripsHTML+'<div class="travel-footer"><span class="travel-note">Submit to Deel by 15th (soft) \u00b7 19th (hard deadline)</span></div></div>';
+  var isTravel=activeTab==='travel';
+  var archiveHTML='';
+  if(isTravel&&submittedBatches.length){
+    var archRows=submittedBatches.slice().reverse().map(function(b){
+      var bTrips=b.trips||[];var bTs=b.submittedTs?fmtTs(b.submittedTs):'';
+      return'<div class="travel-archive-batch"><div class="travel-archive-label">'+(b.label||'Batch')+' <span style="color:var(--muted);font-size:.6rem">'+(bTs?'submitted '+bTs:'')+'</span><span style="color:var(--muted);font-size:.6rem;margin-left:.5rem">'+bTrips.length+' trip'+(bTrips.length!==1?'s':'')+'</span></div>'+
+      (bTrips.length?'<ul class="trip-list">'+bTrips.map(function(t){return'<li class="trip-item" style="opacity:.6"><span class="trip-date">'+fmtDate(t.date)+'</span><span class="trip-route">'+t.from+'</span><span class="trip-arrow">\u2192</span><span class="trip-route">'+t.to+'</span>'+(t.km?'<span class="trip-notes" style="color:var(--travel)">'+t.km+' km</span>':'')+(t.notes?'<span class="trip-notes">'+t.notes+'</span>':'')+'</li>';}).join('')+'</ul>':'<div class="trip-empty" style="font-size:.6rem">No trips recorded.</div>')+
+      '</div>';
+    }).join('');
+    archiveHTML='<div class="travel-block" style="margin-top:1rem"><div class="travel-header"><div class="dot" style="background:var(--muted)"></div><div class="travel-title" style="color:var(--muted)">Submitted Batches</div></div>'+archRows+'</div>';
+  }
+  document.getElementById('travelSection').innerHTML='<div class="travel-block"><div class="travel-header"><div class="dot" style="background:var(--travel)"></div><div class="travel-title">Travel Claims</div><div style="margin-left:auto"><button class="add-btn" onclick="openModal(\'trip\')" style="border-color:var(--travel);color:var(--travel)">+ Log Trip</button></div></div>'+alertHTML+statsHTML+tripsHTML+'<div class="travel-footer"><span class="travel-note">Submit to Deel by 15th (soft) \u00b7 19th (hard deadline)</span></div></div>'+archiveHTML;
 }
 function renderAll(){
   var isOverview=activeTab==='all';
@@ -1027,7 +1056,7 @@ function renderAll(){
   renderControlBar();
   if(isOverview||isWorklog)renderWorklog();else document.getElementById('worklogSection').innerHTML='';
   renderTabContent();
-  if(isTravel)renderTravelClaims();else document.getElementById('travelSection').innerHTML='';
+  if(isTravel||isOverview)renderTravelClaims();else document.getElementById('travelSection').innerHTML='';
 }
 function updateDate(){var now=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];document.getElementById('dateDisplay').textContent=days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();document.getElementById('weekDisplay').textContent='week '+getWeekKey(now).split('W')[1]+' of '+now.getFullYear();}
 // CLICK SPARK
