@@ -9,7 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#080807;--surface:#141412;--surface2:#1c1c1a;--surface3:#111110;--border:#2a2a24;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
+:root{--bg:#080807;--surface:#141412;--surface2:#1c1c1a;--surface3:#111110;--border:#2a2a24;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--housekeeping:#b8956a;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;padding:2rem;}
 #loadingScreen,#authScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:1.25rem;}
@@ -46,7 +46,7 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem .75rem;text-align:center;}
 .summary-num{font-family:'DM Serif Display',serif;font-size:2rem;line-height:1;margin-bottom:.25rem;}
 .summary-label{font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.people .summary-num{color:var(--people);}.expenses .summary-num{color:var(--expenses);}.leadership .summary-num{color:var(--leadership);}.ohs .summary-num{color:var(--ohs);}.facilities .summary-num{color:var(--facilities);}.events .summary-num{color:var(--events);}
+.people .summary-num{color:var(--people);}.expenses .summary-num{color:var(--expenses);}.leadership .summary-num{color:var(--leadership);}.ohs .summary-num{color:var(--ohs);}.facilities .summary-num{color:var(--facilities);}.events .summary-num{color:var(--events);}.housekeeping .summary-num{color:var(--housekeeping);}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
 .card.full{grid-column:1/-1;}
@@ -81,11 +81,11 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .sub-checkbox{width:12px;height:12px;border:1px solid var(--border);border-radius:2px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .sub-text{font-size:.72rem;color:var(--text);flex:1;line-height:1.4;}
 .sub-note{font-size:.6rem;color:var(--muted);white-space:nowrap;}
-.people .dot{background:var(--people);}.expenses .dot{background:var(--expenses);}.leadership .dot{background:var(--leadership);}.ohs .dot{background:var(--ohs);}.facilities .dot{background:var(--facilities);}.events .dot{background:var(--events);}
-.people .task-item:hover{border-color:var(--people);}.expenses .task-item:hover{border-color:var(--expenses);}.leadership .task-item:hover{border-color:var(--leadership);}.ohs .task-item:hover{border-color:var(--ohs);}.facilities .task-item:hover{border-color:var(--facilities);}.events .task-item:hover{border-color:var(--events);}
+.people .dot{background:var(--people);}.expenses .dot{background:var(--expenses);}.leadership .dot{background:var(--leadership);}.ohs .dot{background:var(--ohs);}.facilities .dot{background:var(--facilities);}.events .dot{background:var(--events);}.housekeeping .dot{background:var(--housekeeping);}
+.people .task-item:hover{border-color:var(--people);}.expenses .task-item:hover{border-color:var(--expenses);}.leadership .task-item:hover{border-color:var(--leadership);}.ohs .task-item:hover{border-color:var(--ohs);}.facilities .task-item:hover{border-color:var(--facilities);}.events .task-item:hover{border-color:var(--events);}.housekeeping .task-item:hover{border-color:var(--housekeeping);}
 .progress-bar{height:2px;background:var(--border);border-radius:1px;margin-top:1.25rem;overflow:hidden;}
 .progress-fill{height:100%;border-radius:1px;transition:width .4s ease;}
-.people .progress-fill{background:var(--people);}.expenses .progress-fill{background:var(--expenses);}.leadership .progress-fill{background:var(--leadership);}.ohs .progress-fill{background:var(--ohs);}.facilities .progress-fill{background:var(--facilities);}.events .progress-fill{background:var(--events);}
+.people .progress-fill{background:var(--people);}.expenses .progress-fill{background:var(--expenses);}.leadership .progress-fill{background:var(--leadership);}.ohs .progress-fill{background:var(--ohs);}.facilities .progress-fill{background:var(--facilities);}.events .progress-fill{background:var(--events);}.housekeeping .progress-fill{background:var(--housekeeping);}
 .progress-label{font-size:.6rem;color:var(--muted);margin-top:.4rem;}
 .add-btn{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.3rem .6rem;border-radius:2px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;white-space:nowrap;}
 .add-btn:hover{color:var(--text);border-color:var(--muted);}
@@ -285,7 +285,7 @@ header{position:sticky;top:0;z-index:50;background:var(--bg);padding-bottom:1.25
 .tab-btn[data-tab="leadership"].active{background:var(--leadership);}
 .tab-btn[data-tab="ohs"].active{background:var(--ohs);}
 .tab-btn[data-tab="facilities"].active{background:var(--facilities);}
-.tab-btn[data-tab="events"].active{background:var(--events);}
+.tab-btn[data-tab="events"].active{background:var(--events);}.tab-btn[data-tab="housekeeping"].active{background:var(--housekeeping);}
 .filter-bar{display:flex;gap:.25rem;}
 .filter-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .65rem;border-radius:2px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;}
 .filter-btn:hover{color:var(--text);}
@@ -298,13 +298,14 @@ header{position:sticky;top:0;z-index:50;background:var(--bg);padding-bottom:1.25
 body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1px);background-size:28px 28px;}
 /* Card coloured top border + hover glow */
 .card{transition:box-shadow .3s,transform .25s;position:relative;--cursor-angle:180deg;--card-glow-color:rgba(255,255,255,.3);}
-.card.people{border-top:2px solid var(--people);--card-glow-color:var(--people);}.card.expenses{border-top:2px solid var(--expenses);--card-glow-color:var(--expenses);}.card.leadership{border-top:2px solid var(--leadership);--card-glow-color:var(--leadership);}.card.ohs{border-top:2px solid var(--ohs);--card-glow-color:var(--ohs);}.card.facilities{border-top:2px solid var(--facilities);--card-glow-color:var(--facilities);}.card.events{border-top:2px solid var(--events);--card-glow-color:var(--events);}
+.card.people{border-top:2px solid var(--people);--card-glow-color:var(--people);}.card.expenses{border-top:2px solid var(--expenses);--card-glow-color:var(--expenses);}.card.leadership{border-top:2px solid var(--leadership);--card-glow-color:var(--leadership);}.card.ohs{border-top:2px solid var(--ohs);--card-glow-color:var(--ohs);}.card.facilities{border-top:2px solid var(--facilities);--card-glow-color:var(--facilities);}.card.events{border-top:2px solid var(--events);--card-glow-color:var(--events);}.card.housekeeping{border-top:2px solid var(--housekeeping);--card-glow-color:var(--housekeeping);}
 .card.people:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,169,110,.18);}
 .card.expenses:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(126,184,154,.18);}
 .card.leadership:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(168,155,201,.18);}
 .card.ohs:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,122,122,.18);}
 .card.facilities:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(122,175,201,.18);}
 .card.events:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,122,171,.18);}
+.card.housekeeping:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(184,149,106,.18);}
 /* Border Glow */
 .card,.task-card{--cursor-angle:180deg;--card-glow-opacity:0;}
 .task-card{--card-glow-color:var(--leadership);}
@@ -313,13 +314,13 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 /* Summary tile coloured bottom border + hover lift */
 .summary-card{transition:transform .2s,box-shadow .2s;}
 .summary-card:hover{transform:translateY(-2px);}
-.summary-card.people{border-bottom:2px solid var(--people);}.summary-card.expenses{border-bottom:2px solid var(--expenses);}.summary-card.leadership{border-bottom:2px solid var(--leadership);}.summary-card.ohs{border-bottom:2px solid var(--ohs);}.summary-card.facilities{border-bottom:2px solid var(--facilities);}.summary-card.events{border-bottom:2px solid var(--events);}
+.summary-card.people{border-bottom:2px solid var(--people);}.summary-card.expenses{border-bottom:2px solid var(--expenses);}.summary-card.leadership{border-bottom:2px solid var(--leadership);}.summary-card.ohs{border-bottom:2px solid var(--ohs);}.summary-card.facilities{border-bottom:2px solid var(--facilities);}.summary-card.events{border-bottom:2px solid var(--events);}.summary-card.housekeeping{border-bottom:2px solid var(--housekeeping);}
 /* Dot glow in card headers */
-.people .dot{box-shadow:0 0 7px var(--people);}.expenses .dot{box-shadow:0 0 7px var(--expenses);}.leadership .dot{box-shadow:0 0 7px var(--leadership);}.ohs .dot{box-shadow:0 0 7px var(--ohs);}.facilities .dot{box-shadow:0 0 7px var(--facilities);}.events .dot{box-shadow:0 0 7px var(--events);}
+.people .dot{box-shadow:0 0 7px var(--people);}.expenses .dot{box-shadow:0 0 7px var(--expenses);}.leadership .dot{box-shadow:0 0 7px var(--leadership);}.ohs .dot{box-shadow:0 0 7px var(--ohs);}.facilities .dot{box-shadow:0 0 7px var(--facilities);}.events .dot{box-shadow:0 0 7px var(--events);}.housekeeping .dot{box-shadow:0 0 7px var(--housekeeping);}
 /* Progress bar — taller + glow */
 .progress-bar{height:3px;}
 .progress-fill{transition:width .7s cubic-bezier(.34,1.56,.64,1);}
-.people .progress-fill{box-shadow:0 0 8px var(--people);}.expenses .progress-fill{box-shadow:0 0 8px var(--expenses);}.leadership .progress-fill{box-shadow:0 0 8px var(--leadership);}.ohs .progress-fill{box-shadow:0 0 8px var(--ohs);}.facilities .progress-fill{box-shadow:0 0 8px var(--facilities);}.events .progress-fill{box-shadow:0 0 8px var(--events);}
+.people .progress-fill{box-shadow:0 0 8px var(--people);}.expenses .progress-fill{box-shadow:0 0 8px var(--expenses);}.leadership .progress-fill{box-shadow:0 0 8px var(--leadership);}.ohs .progress-fill{box-shadow:0 0 8px var(--ohs);}.facilities .progress-fill{box-shadow:0 0 8px var(--facilities);}.events .progress-fill{box-shadow:0 0 8px var(--events);}.housekeeping .progress-fill{box-shadow:0 0 8px var(--housekeeping);}
 /* Task card hover lift */
 .task-card{transition:box-shadow .25s,transform .2s;}.task-card:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,0,0,.35);}
 /* Modal backdrop blur */
@@ -387,6 +388,8 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
     <div class="sidebar-item" data-tab="tasks" style="--item-color:var(--leadership)" onclick="sidebarNav('tasks')"><div class="sidebar-dot"></div><span class="sidebar-label">Tasks</span></div>
     <div class="sidebar-item" data-tab="travel" style="--item-color:var(--travel)" onclick="sidebarNav('travel')"><div class="sidebar-dot"></div><span class="sidebar-label">Travel Claims</span></div>
     <div class="sidebar-item" data-tab="worklog" style="--item-color:var(--muted)" onclick="sidebarNav('worklog')"><div class="sidebar-dot"></div><span class="sidebar-label">Work Log</span></div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item" data-tab="housekeeping" style="--item-color:var(--housekeeping)" onclick="sidebarNav('housekeeping')"><div class="sidebar-dot"></div><span class="sidebar-label">Housekeeping</span></div>
   </nav>
 </aside>
 <header>
@@ -398,7 +401,7 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
     <button class="signout-btn" onclick="signOut()">Sign out</button>
   </div>
 </header>
-<div class="legend">
+<div class="legend" id="legendRow">
   <div class="legend-item"><div class="legend-dot daily"></div> resets daily</div>
   <div class="legend-item"><div class="legend-dot weekly"></div> resets weekly</div>
   <div class="legend-item"><div class="legend-dot monthly"></div> resets monthly</div>
@@ -862,6 +865,7 @@ var categories=[
       {text:'PE warehouse — send chips & beers'},
     ]},
   ]},
+  {id:'housekeeping',label:'Housekeeping',color:'housekeeping',tasks:[]},
 ];
 // RENDER
 function getProgress(cat){var done=0;cat.tasks.forEach(function(t,ti){if(allSubsDone(cat,ti))done++;});return{done:done,total:cat.tasks.length,pct:cat.tasks.length?Math.round(done/cat.tasks.length*100):0};}
@@ -885,11 +889,13 @@ function catCardHTML(cat,ci){
   return'<div class="card '+cat.color+(isLast?' full':'')+'" style="animation-delay:'+(0.15+ci*0.08)+'s"><div class="card-header"><div class="dot"></div><div class="card-title">'+cat.label+'</div>'+ib+'</div><ul class="task-list">'+tasks+'</ul>'+extra+'<div class="progress-bar"><div class="progress-fill" style="width:'+p.pct+'%"></div></div><div class="progress-label">'+p.done+' of '+p.total+' done this period</div></div>';
 }
 function renderControlBar(){
-  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'}];
-  var tabsHTML=tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join('');
-  var fLabels={all:'All',todo:'To Do',done:'Done',overdue:'Overdue',duesoon:'Due Soon'};
-  var filtersHTML=['all','todo','done','overdue','duesoon'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'"'+(f==='overdue'?' style="border-color:var(--red);'+(activeFilter===f?'background:var(--red);color:var(--bg)':'color:var(--red)')+'"':f==='duesoon'?' style="border-color:var(--people);'+(activeFilter===f?'background:var(--people);color:var(--bg)':'color:var(--people)')+'"':'')+' onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
-  document.getElementById('controlBar').innerHTML='<div class="control-bar"><div class="search-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" id="searchInput" placeholder="Search tasks\u2026" oninput="onSearch(this.value)" value="'+searchQuery.replace(/"/g,'&quot;')+'"/>'+(searchQuery?'<button class="search-clear" onclick="clearSearch()">\u2715</button>':'')+'</div><div class="tab-filter-row"><div class="tab-bar">'+tabsHTML+'</div><div class="filter-bar">'+filtersHTML+'</div></div></div>';
+  var isOverview=activeTab==='all';
+  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'},{id:'housekeeping',label:'Housekeeping'}];
+  var tabsHTML=isOverview?tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join(''):'';
+  var fLabels={all:'All',duesoon:'Due Soon',overdue:'Overdue',todo:'To Do',done:'Done'};
+  var filtersHTML=['all','duesoon','overdue','todo','done'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'"'+(f==='overdue'?' style="border-color:var(--red);'+(activeFilter===f?'background:var(--red);color:var(--bg)':'color:var(--red)')+'"':f==='duesoon'?' style="border-color:var(--people);'+(activeFilter===f?'background:var(--people);color:var(--bg)':'color:var(--people)')+'"':'')+' onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
+  var tabRowHTML=isOverview?'<div class="tab-bar">'+tabsHTML+'</div>':'';
+  document.getElementById('controlBar').innerHTML='<div class="control-bar"><div class="search-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" id="searchInput" placeholder="Search tasks\u2026" oninput="onSearch(this.value)" value="'+searchQuery.replace(/"/g,'&quot;')+'"/>'+(searchQuery?'<button class="search-clear" onclick="clearSearch()">\u2715</button>':'')+'</div><div class="tab-filter-row">'+tabRowHTML+'<div class="filter-bar">'+filtersHTML+'</div></div></div>';
 }
 function tasksHTML(catFilter){
   var fs=getFS();
@@ -924,6 +930,13 @@ function renderTabContent(){
   if(activeTab==='all'){
     html+=tasksHTML('all');
     html+='<div class="grid">'+categories.map(function(cat,ci){return catCardHTML(cat,ci);}).join('')+'</div>';
+  } else if(activeTab==='travel'||activeTab==='worklog'){
+    // handled by renderAll directly
+  } else if(activeTab==='housekeeping'){
+    var hcat=categories.find(function(c){return c.id==='housekeeping';});
+    if(hcat)html+='<div class="grid single-tab">'+catCardHTML(hcat,0)+'</div>';
+    html+='<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;opacity:.6">Housekeeping content coming soon</div>';
+    html+=tasksHTML('housekeeping');
   } else {
     var cat=categories.find(function(c){return c.id===activeTab;});
     if(cat)html+='<div class="grid single-tab">'+catCardHTML(cat,0)+'</div>';
@@ -1008,7 +1021,21 @@ function renderTravelClaims(){
   var statsHTML='<div class="travel-stats"><div class="travel-stat"><div class="travel-stat-num">'+trips.length+'</div><div class="travel-stat-label">Unsubmitted Trips</div></div><div class="travel-stat"><div class="travel-stat-num">'+ms[now.getMonth()]+'</div><div class="travel-stat-label">Current Cycle</div></div><div class="travel-stat"><div class="travel-stat-num" style="font-size:1rem;padding-top:.3rem">'+deadlineLabel+'</div><div class="travel-stat-label">Deel Deadline</div></div></div>';
   document.getElementById('travelSection').innerHTML='<div class="travel-block"><div class="travel-header"><div class="dot" style="background:var(--travel)"></div><div class="travel-title">Travel Claims</div><div style="margin-left:auto"><button class="add-btn" onclick="openModal(\'trip\')" style="border-color:var(--travel);color:var(--travel)">+ Log Trip</button></div></div>'+alertHTML+statsHTML+tripsHTML+'<div class="travel-footer"><span class="travel-note">Submit to Deel by 15th (soft) \u00b7 19th (hard deadline)</span></div></div>';
 }
-function renderAll(){renderSummary();renderWorklog();renderTabContent();renderTravelClaims();}
+function renderAll(){
+  var isOverview=activeTab==='all';
+  var isTravel=activeTab==='travel';
+  var isWorklog=activeTab==='worklog';
+  // Legend — overview only
+  var leg=document.getElementById('legendRow');if(leg)leg.style.display=isOverview?'':'none';
+  // Summary tiles — overview only
+  if(isOverview)renderSummary();else document.getElementById('summaryRow').innerHTML='';
+  // Worklog — overview + worklog page
+  if(isOverview||isWorklog)renderWorklog();else document.getElementById('worklogSection').innerHTML='';
+  // Tab content (cards, tasks, control bar)
+  renderTabContent();
+  // Travel — travel page only
+  if(isTravel)renderTravelClaims();else document.getElementById('travelSection').innerHTML='';
+}
 function updateDate(){var now=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];document.getElementById('dateDisplay').textContent=days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();document.getElementById('weekDisplay').textContent='week '+getWeekKey(now).split('W')[1]+' of '+now.getFullYear();}
 // CLICK SPARK
 (function(){
