@@ -238,6 +238,31 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .modal-btn.secondary{background:none;border:1px solid var(--border);color:var(--muted);}
 .modal-btn.secondary:hover{border-color:var(--muted);color:var(--text);}
 footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+/* SIDEBAR */
+.sidebar-scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:190;opacity:0;pointer-events:none;transition:opacity .3s;}
+.sidebar-scrim.open{opacity:1;pointer-events:auto;}
+.sidebar{position:fixed;top:0;left:0;height:100vh;width:260px;background:var(--surface);border-right:1px solid var(--border);z-index:200;transform:translateX(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column;backdrop-filter:blur(8px);}
+.sidebar.open{transform:translateX(0);}
+.sidebar-head{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 1.25rem 1rem;border-bottom:1px solid var(--border);}
+.sidebar-brand{font-family:'DM Serif Display',serif;font-size:1.15rem;font-weight:400;line-height:1;}
+.sidebar-brand em{font-style:italic;color:var(--muted);}
+.sidebar-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:.2rem .35rem;border-radius:4px;transition:color .2s;}
+.sidebar-close:hover{color:var(--text);}
+.sidebar-nav{padding:.5rem 0;flex:1;}
+.sidebar-divider{height:1px;background:var(--border);margin:.4rem .75rem;}
+.sidebar-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.25rem;cursor:pointer;border-left:2px solid transparent;transition:color .2s,background .2s,border-color .2s;color:var(--muted);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-family:'DM Mono',monospace;user-select:none;}
+.sidebar-item:hover{color:var(--item-color,var(--text));background:var(--surface2);border-left-color:var(--item-color,var(--muted));}
+.sidebar-item.active{color:var(--item-color,var(--text));background:var(--surface2);border-left-color:var(--item-color,var(--muted));}
+.sidebar-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.7;transition:opacity .2s,box-shadow .2s;}
+.sidebar-item:hover .sidebar-dot,.sidebar-item.active .sidebar-dot{opacity:1;box-shadow:0 0 8px var(--item-color,var(--muted));}
+.sidebar-label{flex:1;}
+/* Hamburger */
+.hamburger-btn{background:none;border:none;cursor:pointer;padding:.35rem;display:flex;flex-direction:column;gap:4px;flex-shrink:0;border-radius:4px;transition:background .2s;}
+.hamburger-btn:hover{background:var(--surface2);}
+.hamburger-btn span{display:block;width:18px;height:1.5px;background:var(--muted);border-radius:2px;transition:background .2s;}
+.hamburger-btn:hover span{background:var(--text);}
+/* Sticky header */
+header{position:sticky;top:0;z-index:50;background:var(--bg);padding-bottom:1.25rem;}
 .footer-note{font-size:.65rem;color:var(--muted);}
 .reset-btn{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.4rem .75rem;border-radius:2px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;transition:all .2s;}
 .reset-btn:hover{color:var(--text);border-color:var(--muted);}
@@ -343,8 +368,29 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 </div>
 <div id="appScreen">
 <div class="grain"></div>
+<div class="sidebar-scrim" id="sidebarScrim" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="sidebar-brand">Admin <em>Master</em></div>
+    <button class="sidebar-close" onclick="closeSidebar()">&#x2715;</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-item active" data-tab="all" style="--item-color:var(--text)" onclick="sidebarNav('all')"><div class="sidebar-dot"></div><span class="sidebar-label">Overview</span></div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item" data-tab="people" style="--item-color:var(--people)" onclick="sidebarNav('people')"><div class="sidebar-dot"></div><span class="sidebar-label">People</span></div>
+    <div class="sidebar-item" data-tab="expenses" style="--item-color:var(--expenses)" onclick="sidebarNav('expenses')"><div class="sidebar-dot"></div><span class="sidebar-label">Expenses</span></div>
+    <div class="sidebar-item" data-tab="leadership" style="--item-color:var(--leadership)" onclick="sidebarNav('leadership')"><div class="sidebar-dot"></div><span class="sidebar-label">Leadership</span></div>
+    <div class="sidebar-item" data-tab="ohs" style="--item-color:var(--ohs)" onclick="sidebarNav('ohs')"><div class="sidebar-dot"></div><span class="sidebar-label">H&amp;S</span></div>
+    <div class="sidebar-item" data-tab="facilities" style="--item-color:var(--facilities)" onclick="sidebarNav('facilities')"><div class="sidebar-dot"></div><span class="sidebar-label">Facilities</span></div>
+    <div class="sidebar-item" data-tab="events" style="--item-color:var(--events)" onclick="sidebarNav('events')"><div class="sidebar-dot"></div><span class="sidebar-label">Events</span></div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item" data-tab="tasks" style="--item-color:var(--leadership)" onclick="sidebarNav('tasks')"><div class="sidebar-dot"></div><span class="sidebar-label">Tasks</span></div>
+    <div class="sidebar-item" data-tab="travel" style="--item-color:var(--travel)" onclick="sidebarNav('travel')"><div class="sidebar-dot"></div><span class="sidebar-label">Travel Claims</span></div>
+    <div class="sidebar-item" data-tab="worklog" style="--item-color:var(--muted)" onclick="sidebarNav('worklog')"><div class="sidebar-dot"></div><span class="sidebar-label">Work Log</span></div>
+  </nav>
+</aside>
 <header>
-  <div class="header-left"><h1>Admin <span>Master</span></h1></div>
+  <div class="header-left" style="display:flex;align-items:center;gap:.75rem;"><button class="hamburger-btn" onclick="toggleSidebar()" title="Menu"><span></span><span></span><span></span></button><h1>Admin <span>Master</span></h1></div>
   <div class="header-right">
     <div class="date-display" id="dateDisplay"></div>
     <div class="week-indicator" id="weekDisplay"></div>
@@ -673,9 +719,9 @@ function openModal(mode){
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><div style="display:flex;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap">'+['Today','+ 1 Day','+ 3 Days','+ 7 Days'].map(function(l,i){var d=new Date();d.setDate(d.getDate()+[0,1,3,7][i]);var v=d.toISOString().slice(0,10);return'<button type="button" onclick="document.getElementById(\'mTaskDue\').value=\''+v+'\'" style="font-family:\'DM Mono\',monospace;font-size:.6rem;letter-spacing:.06em;padding:.25rem .6rem;border:1px solid var(--border);border-radius:2px;background:none;color:var(--muted);cursor:pointer">'+l+'</button>';}).join('')+'</div><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
   }
   else if(mode==='backdate'){
-    var catOpts=['Expenses','People','Leadership','Facilities','Health & Safety','Other'].map(function(c){return'<option>'+c+'</option>';}).join('');
+    var catOpts=[['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events']].map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>';}).join('');
     title.textContent='Add Past Entry';
-    body.innerHTML='<div class="form-group"><label class="form-label">What did you complete?</label><input class="form-input" id="mBdName" placeholder="e.g. Weekly groceries \u2014 Menlyn"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mBdCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Date</label><input class="form-input" id="mBdDate" type="date"/></div><div class="form-group"><label class="form-label">Time <span style="opacity:.5;font-size:.9em">(defaults to 09:00)</span></label><input class="form-input" id="mBdTime" type="time" value="09:00"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitBackdate()">Add Entry</button></div>';
+    body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mBdName" placeholder="e.g. Weekly groceries \u2014 Menlyn"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mBdCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="form-group"><label class="form-label">Date Completed</label><input class="form-input" id="mBdDate" type="date"/></div><div class="form-group"><label class="form-label">Time <span style="opacity:.5;font-size:.9em">(defaults to 09:00)</span></label><input class="form-input" id="mBdTime" type="time" value="09:00"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitBackdate()">Add Entry</button></div>';
   }
   else if(mode==='trip'){var offOpts=TRIP_OFFICES.map(function(o){return'<option>'+o+'</option>';}).join('');title.textContent='Log a Trip';body.innerHTML='<div class="form-group"><label class="form-label">Date</label><input class="form-input" id="mTripDate" type="date" value="'+new Date().toISOString().slice(0,10)+'"/></div><div class="form-group"><label class="form-label">From</label><select class="form-select" id="mFrom">'+offOpts+'</select></div><div class="form-group"><label class="form-label">To</label><select class="form-select" id="mTo">'+offOpts+'</select></div><div class="form-group"><label class="form-label">Distance (km)</label><input class="form-input" id="mTripKm" type="number" min="0" step="0.1" placeholder="e.g. 42"/></div><div class="form-group"><label class="form-label">Notes <span style="opacity:.5;font-size:.9em">(optional)</span></label><input class="form-input" id="mTripNotes" placeholder="e.g. Gave Thuli tracker"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="doSubmitTrip()">Log Trip</button></div>';}
 }
@@ -685,7 +731,18 @@ function removeStepInput(btn){var row=btn.parentElement;if(row.parentElement.chi
 function submitOnboarding(){var name=document.getElementById('mName').value.trim();if(!name)return;closeModal();createOnboarding(name,document.getElementById('mLoc').value,document.getElementById('mDate').value);}
 function submitOffboarding(){var name=document.getElementById('mName').value.trim();if(!name)return;closeModal();createOffboarding(name,document.getElementById('mLoc').value,document.getElementById('mDate').value);}
 function submitTask(){var name=document.getElementById('mProjName').value.trim();if(!name)return;var inputs=document.getElementById('stepsInputList').querySelectorAll('input');var steps=[];inputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});if(!steps.length)steps.push('Complete');var cat=document.getElementById('mTaskCat')?document.getElementById('mTaskCat').value:'general';var due=document.getElementById('mTaskDue')?document.getElementById('mTaskDue').value:'';closeModal();createTask(name,steps,cat,due||null);}
-function submitBackdate(){var name=document.getElementById('mBdName').value.trim();if(!name){document.getElementById('mBdName').focus();return;}var cat=document.getElementById('mBdCat').value;var dateStr=document.getElementById('mBdDate').value;var timeStr=document.getElementById('mBdTime').value||'09:00';if(!dateStr){document.getElementById('mBdDate').focus();return;}var dt=new Date(dateStr+'T'+timeStr);var ts=dt.getTime();var fs=getFS();if(!fs.worklog)fs.worklog=[];fs.worklog.push({id:uid(),name:name,category:'recurring:'+cat,created:ts-300000,completed:ts});saveFS(Object.assign({},fs));closeModal();}
+function submitBackdate(){var name=document.getElementById('mBdName').value.trim();if(!name){document.getElementById('mBdName').focus();return;}var cat=document.getElementById('mBdCat').value;var dateStr=document.getElementById('mBdDate').value;var timeStr=document.getElementById('mBdTime').value||'09:00';if(!dateStr){document.getElementById('mBdDate').focus();return;}var dt=new Date(dateStr+'T'+timeStr);var ts=dt.getTime();var stepInputs=document.getElementById('stepsInputList')?document.getElementById('stepsInputList').querySelectorAll('input'):[];var steps=[];stepInputs.forEach(function(inp){if(inp.value.trim())steps.push(inp.value.trim());});closeModal();var fs=getFS();if(!fs.worklog)fs.worklog=[];fs.worklog.push({id:uid(),name:name,category:'recurring:'+cat,created:ts-300000,completed:ts});steps.forEach(function(s,i){fs.worklog.push({id:uid(),name:s,category:'taskstep',taskName:name,created:ts-300000+(i*60000),completed:ts+(i*60000)});});saveFS(Object.assign({},fs));}
+// SIDEBAR
+function toggleSidebar(){var s=document.getElementById('sidebar');var sc=document.getElementById('sidebarScrim');var open=s.classList.toggle('open');sc.classList.toggle('open',open);}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarScrim').classList.remove('open');}
+function sidebarNav(tab){
+  if(tab==='worklog'){activeTab='all';if(!wlOpen){wlOpen=true;}renderAll();setTimeout(function(){var el=document.getElementById('worklogSection');if(el)el.scrollIntoView({behavior:'smooth'});},150);}
+  else if(tab==='travel'){activeTab='all';renderAll();setTimeout(function(){var el=document.getElementById('travelSection');if(el)el.scrollIntoView({behavior:'smooth'});},150);}
+  else if(tab==='tasks'){activeTab='all';renderAll();setTimeout(function(){var el=document.querySelector('.tasks-block');if(el)el.scrollIntoView({behavior:'smooth'});},150);}
+  else{activeTab=tab;renderAll();window.scrollTo({top:0,behavior:'smooth'});}
+  document.querySelectorAll('.sidebar-item').forEach(function(item){item.classList.toggle('active',item.dataset.tab===tab);});
+  closeSidebar();
+}
 // EXPORT
 var wlFilter='week';
 var _currentEditId=null;
