@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 <title>Admin Master</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#080807;--surface:#141412;--surface2:#1c1c1a;--surface3:#111110;--border:#2a2a24;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--housekeeping:#b8956a;--marketing:#7ec9b8;--pc:#c97ac9;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
+:root{--bg:#080807;--surface:#141412;--surface2:#1c1c1a;--surface3:#111110;--border:#2a2a24;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--housekeeping:#b8956a;--marketing:#7ec9b8;--pc:#c97ac9;--procurement:#a8c97a;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;padding:2rem;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;padding:2rem;overflow-x:hidden;}
+html{overflow-x:hidden;}
 #loadingScreen,#authScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:1.25rem;}
 #authScreen{display:none;}
 .auth-title{font-family:'DM Serif Display',serif;font-size:2.5rem;font-weight:400;text-align:center;}
@@ -46,7 +47,7 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem .75rem;text-align:center;}
 .summary-num{font-family:'DM Serif Display',serif;font-size:2rem;line-height:1;margin-bottom:.25rem;}
 .summary-label{font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.people .summary-num{color:var(--people);}.expenses .summary-num{color:var(--expenses);}.leadership .summary-num{color:var(--leadership);}.ohs .summary-num{color:var(--ohs);}.facilities .summary-num{color:var(--facilities);}.events .summary-num{color:var(--events);}.housekeeping .summary-num{color:var(--housekeeping);}.marketing .summary-num{color:var(--marketing);}.pc .summary-num{color:var(--pc);}.travel .summary-num{color:var(--travel);}
+.people .summary-num{color:var(--people);}.expenses .summary-num{color:var(--expenses);}.leadership .summary-num{color:var(--leadership);}.ohs .summary-num{color:var(--ohs);}.facilities .summary-num{color:var(--facilities);}.events .summary-num{color:var(--events);}.housekeeping .summary-num{color:var(--housekeeping);}.marketing .summary-num{color:var(--marketing);}.pc .summary-num{color:var(--pc);}.procurement .summary-num{color:var(--procurement);}.travel .summary-num{color:var(--travel);}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
 .card.full{grid-column:1/-1;}
@@ -81,11 +82,11 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .sub-checkbox{width:12px;height:12px;border:1px solid var(--border);border-radius:2px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .sub-text{font-size:.72rem;color:var(--text);flex:1;line-height:1.4;}
 .sub-note{font-size:.6rem;color:var(--muted);white-space:nowrap;}
-.people .dot{background:var(--people);}.expenses .dot{background:var(--expenses);}.leadership .dot{background:var(--leadership);}.ohs .dot{background:var(--ohs);}.facilities .dot{background:var(--facilities);}.events .dot{background:var(--events);}.housekeeping .dot{background:var(--housekeeping);}.marketing .dot{background:var(--marketing);}.pc .dot{background:var(--pc);}
-.people .task-item:hover{border-color:var(--people);}.expenses .task-item:hover{border-color:var(--expenses);}.leadership .task-item:hover{border-color:var(--leadership);}.ohs .task-item:hover{border-color:var(--ohs);}.facilities .task-item:hover{border-color:var(--facilities);}.events .task-item:hover{border-color:var(--events);}.housekeeping .task-item:hover{border-color:var(--housekeeping);}.marketing .task-item:hover{border-color:var(--marketing);}.pc .task-item:hover{border-color:var(--pc);}
+.people .dot{background:var(--people);}.expenses .dot{background:var(--expenses);}.leadership .dot{background:var(--leadership);}.ohs .dot{background:var(--ohs);}.facilities .dot{background:var(--facilities);}.events .dot{background:var(--events);}.housekeeping .dot{background:var(--housekeeping);}.marketing .dot{background:var(--marketing);}.pc .dot{background:var(--pc);}.procurement .dot{background:var(--procurement);}
+.people .task-item:hover{border-color:var(--people);}.expenses .task-item:hover{border-color:var(--expenses);}.leadership .task-item:hover{border-color:var(--leadership);}.ohs .task-item:hover{border-color:var(--ohs);}.facilities .task-item:hover{border-color:var(--facilities);}.events .task-item:hover{border-color:var(--events);}.housekeeping .task-item:hover{border-color:var(--housekeeping);}.marketing .task-item:hover{border-color:var(--marketing);}.pc .task-item:hover{border-color:var(--pc);}.procurement .task-item:hover{border-color:var(--procurement);}
 .progress-bar{height:2px;background:var(--border);border-radius:1px;margin-top:1.25rem;overflow:hidden;}
 .progress-fill{height:100%;border-radius:1px;transition:width .4s ease;}
-.people .progress-fill{background:var(--people);}.expenses .progress-fill{background:var(--expenses);}.leadership .progress-fill{background:var(--leadership);}.ohs .progress-fill{background:var(--ohs);}.facilities .progress-fill{background:var(--facilities);}.events .progress-fill{background:var(--events);}.housekeeping .progress-fill{background:var(--housekeeping);}.marketing .progress-fill{background:var(--marketing);}.pc .progress-fill{background:var(--pc);}
+.people .progress-fill{background:var(--people);}.expenses .progress-fill{background:var(--expenses);}.leadership .progress-fill{background:var(--leadership);}.ohs .progress-fill{background:var(--ohs);}.facilities .progress-fill{background:var(--facilities);}.events .progress-fill{background:var(--events);}.housekeeping .progress-fill{background:var(--housekeeping);}.marketing .progress-fill{background:var(--marketing);}.pc .progress-fill{background:var(--pc);}.procurement .progress-fill{background:var(--procurement);}
 .progress-label{font-size:.6rem;color:var(--muted);margin-top:.4rem;}
 .add-btn{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.3rem .6rem;border-radius:2px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;white-space:nowrap;}
 .add-btn:hover{color:var(--text);border-color:var(--muted);}
@@ -288,7 +289,7 @@ header{position:sticky;top:0;z-index:50;background:var(--bg);padding-bottom:1.25
 .tab-btn[data-tab="leadership"].active{background:var(--leadership);}
 .tab-btn[data-tab="ohs"].active{background:var(--ohs);}
 .tab-btn[data-tab="facilities"].active{background:var(--facilities);}
-.tab-btn[data-tab="events"].active{background:var(--events);}.tab-btn[data-tab="housekeeping"].active{background:var(--housekeeping);}.tab-btn[data-tab="marketing"].active{background:var(--marketing);}.tab-btn[data-tab="pc"].active{background:var(--pc);}
+.tab-btn[data-tab="events"].active{background:var(--events);}.tab-btn[data-tab="housekeeping"].active{background:var(--housekeeping);}.tab-btn[data-tab="marketing"].active{background:var(--marketing);}.tab-btn[data-tab="pc"].active{background:var(--pc);}.tab-btn[data-tab="procurement"].active{background:var(--procurement);}
 .filter-bar{display:flex;gap:.25rem;}
 .filter-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .65rem;border-radius:2px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;}
 .filter-btn:hover{color:var(--text);}
@@ -317,13 +318,13 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 /* Summary tile coloured bottom border + hover lift */
 .summary-card{transition:transform .2s,box-shadow .2s;}
 .summary-card:hover{transform:translateY(-2px);}
-.summary-card.people{border-bottom:2px solid var(--people);}.summary-card.expenses{border-bottom:2px solid var(--expenses);}.summary-card.leadership{border-bottom:2px solid var(--leadership);}.summary-card.ohs{border-bottom:2px solid var(--ohs);}.summary-card.facilities{border-bottom:2px solid var(--facilities);}.summary-card.events{border-bottom:2px solid var(--events);}.summary-card.housekeeping{border-bottom:2px solid var(--housekeeping);}.summary-card.marketing{border-bottom:2px solid var(--marketing);}.summary-card.pc{border-bottom:2px solid var(--pc);}.summary-card.travel{border-bottom:2px solid var(--travel);}
+.summary-card.people{border-bottom:2px solid var(--people);}.summary-card.expenses{border-bottom:2px solid var(--expenses);}.summary-card.leadership{border-bottom:2px solid var(--leadership);}.summary-card.ohs{border-bottom:2px solid var(--ohs);}.summary-card.facilities{border-bottom:2px solid var(--facilities);}.summary-card.events{border-bottom:2px solid var(--events);}.summary-card.housekeeping{border-bottom:2px solid var(--housekeeping);}.summary-card.marketing{border-bottom:2px solid var(--marketing);}.summary-card.pc{border-bottom:2px solid var(--pc);}.summary-card.procurement{border-bottom:2px solid var(--procurement);}.summary-card.travel{border-bottom:2px solid var(--travel);}
 /* Dot glow in card headers */
-.people .dot{box-shadow:0 0 7px var(--people);}.expenses .dot{box-shadow:0 0 7px var(--expenses);}.leadership .dot{box-shadow:0 0 7px var(--leadership);}.ohs .dot{box-shadow:0 0 7px var(--ohs);}.facilities .dot{box-shadow:0 0 7px var(--facilities);}.events .dot{box-shadow:0 0 7px var(--events);}.housekeeping .dot{box-shadow:0 0 7px var(--housekeeping);}.marketing .dot{box-shadow:0 0 7px var(--marketing);}.pc .dot{box-shadow:0 0 7px var(--pc);}
+.people .dot{box-shadow:0 0 7px var(--people);}.expenses .dot{box-shadow:0 0 7px var(--expenses);}.leadership .dot{box-shadow:0 0 7px var(--leadership);}.ohs .dot{box-shadow:0 0 7px var(--ohs);}.facilities .dot{box-shadow:0 0 7px var(--facilities);}.events .dot{box-shadow:0 0 7px var(--events);}.housekeeping .dot{box-shadow:0 0 7px var(--housekeeping);}.marketing .dot{box-shadow:0 0 7px var(--marketing);}.pc .dot{box-shadow:0 0 7px var(--pc);}.procurement .dot{box-shadow:0 0 7px var(--procurement);}
 /* Progress bar — taller + glow */
 .progress-bar{height:3px;}
 .progress-fill{transition:width .7s cubic-bezier(.34,1.56,.64,1);}
-.people .progress-fill{box-shadow:0 0 8px var(--people);}.expenses .progress-fill{box-shadow:0 0 8px var(--expenses);}.leadership .progress-fill{box-shadow:0 0 8px var(--leadership);}.ohs .progress-fill{box-shadow:0 0 8px var(--ohs);}.facilities .progress-fill{box-shadow:0 0 8px var(--facilities);}.events .progress-fill{box-shadow:0 0 8px var(--events);}.housekeeping .progress-fill{box-shadow:0 0 8px var(--housekeeping);}.marketing .progress-fill{box-shadow:0 0 8px var(--marketing);}.pc .progress-fill{box-shadow:0 0 8px var(--pc);}
+.people .progress-fill{box-shadow:0 0 8px var(--people);}.expenses .progress-fill{box-shadow:0 0 8px var(--expenses);}.leadership .progress-fill{box-shadow:0 0 8px var(--leadership);}.ohs .progress-fill{box-shadow:0 0 8px var(--ohs);}.facilities .progress-fill{box-shadow:0 0 8px var(--facilities);}.events .progress-fill{box-shadow:0 0 8px var(--events);}.housekeeping .progress-fill{box-shadow:0 0 8px var(--housekeeping);}.marketing .progress-fill{box-shadow:0 0 8px var(--marketing);}.pc .progress-fill{box-shadow:0 0 8px var(--pc);}.procurement .progress-fill{box-shadow:0 0 8px var(--procurement);}
 /* Task card hover lift */
 .task-card{transition:box-shadow .25s,transform .2s;}.task-card:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,0,0,.35);}
 /* Modal backdrop blur */
@@ -340,12 +341,11 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
   .tasks-inner-grid{grid-template-columns:1fr;}
   .wl-stats-row{grid-template-columns:1fr 1fr;}
   .tasks-summary-row,.travel-stats{grid-template-columns:1fr 1fr;}
-  .tab-bar{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:.15rem;scrollbar-width:none;}
-  .tab-bar::-webkit-scrollbar{display:none;}
-  .tab-btn{flex-shrink:0;}
+  .tab-bar{flex-wrap:wrap;gap:.3rem;}
+  .tab-btn{flex-shrink:0;font-size:.55rem;}
   .tab-filter-row{flex-direction:column;align-items:flex-start;}
-  .filter-bar{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;width:100%;}
-  .filter-btn{flex-shrink:0;}
+  .filter-bar{flex-wrap:wrap;width:100%;}
+  .filter-btn{flex-shrink:0;font-size:.55rem;}
   .legend{gap:1rem;}
   .card{padding:1.1rem;}
   .travel-stats{grid-template-columns:1fr 1fr 1fr;}
@@ -395,6 +395,7 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
     <div class="sidebar-item" data-tab="housekeeping" style="--item-color:var(--housekeeping)" onclick="sidebarNav('housekeeping')"><div class="sidebar-dot"></div><span class="sidebar-label">Housekeeping</span></div>
     <div class="sidebar-item" data-tab="marketing" style="--item-color:var(--marketing)" onclick="sidebarNav('marketing')"><div class="sidebar-dot"></div><span class="sidebar-label">Marketing</span></div>
     <div class="sidebar-item" data-tab="pc" style="--item-color:var(--pc)" onclick="sidebarNav('pc')"><div class="sidebar-dot"></div><span class="sidebar-label">P&amp;C</span></div>
+    <div class="sidebar-item" data-tab="procurement" style="--item-color:var(--procurement)" onclick="sidebarNav('procurement')"><div class="sidebar-dot"></div><span class="sidebar-label">Procurement</span></div>
   </nav>
 </aside>
 <header>
@@ -683,7 +684,7 @@ function editTask(id){
   var cg=document.createElement('div');cg.className='form-group';
   var cl=document.createElement('label');cl.className='form-label';cl.textContent='Category';
   var cs=document.createElement('select');cs.className='form-select';cs.id='mTaskCategory';
-  [['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C']].forEach(function(opt){
+  [['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C'],['procurement','Procurement']].forEach(function(opt){
     var o=document.createElement('option');o.value=opt[0];o.textContent=opt[1];if((proj.category||'general')===opt[0])o.selected=true;cs.appendChild(o);
   });
   cg.appendChild(cl);cg.appendChild(cs);body.appendChild(cg);
@@ -721,12 +722,12 @@ function openModal(mode){
   else if(mode==='offboarding'){title.textContent='New Leaver';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. John Doe"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Last Day</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOffboarding()">Create Checklist</button></div>';}
   else if(mode==='task'){
     var precat=activeTab!=='all'?activeTab:'general';
-    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'},{v:'housekeeping',l:'Housekeeping'},{v:'travel',l:'Travel Claims'},{v:'marketing',l:'Marketing'},{v:'pc',l:'P&C'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
+    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'},{v:'housekeeping',l:'Housekeeping'},{v:'travel',l:'Travel Claims'},{v:'marketing',l:'Marketing'},{v:'pc',l:'P&C'},{v:'procurement',l:'Procurement'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
     title.textContent='New Task';
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><div style="display:flex;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap">'+['Today','+ 1 Day','+ 3 Days','+ 7 Days'].map(function(l,i){var d=new Date();d.setDate(d.getDate()+[0,1,3,7][i]);var v=d.toISOString().slice(0,10);return'<button type="button" onclick="document.getElementById(\'mTaskDue\').value=\''+v+'\'" style="font-family:\'DM Mono\',monospace;font-size:.6rem;letter-spacing:.06em;padding:.25rem .6rem;border:1px solid var(--border);border-radius:2px;background:none;color:var(--muted);cursor:pointer">'+l+'</button>';}).join('')+'</div><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
   }
   else if(mode==='backdate'){
-    var catOpts=[['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C']].map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>';}).join('');
+    var catOpts=[['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C'],['procurement','Procurement']].map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>';}).join('');
     title.textContent='Add Past Entry';
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mBdName" placeholder="e.g. Weekly groceries \u2014 Menlyn"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mBdCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="form-group"><label class="form-label">Date Completed</label><input class="form-input" id="mBdDate" type="date"/></div><div class="form-group"><label class="form-label">Time <span style="opacity:.5;font-size:.9em">(defaults to 09:00)</span></label><input class="form-input" id="mBdTime" type="time" value="09:00"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitBackdate()">Add Entry</button></div>';
   }
@@ -870,6 +871,7 @@ var categories=[
   {id:'housekeeping',label:'Housekeeping',color:'housekeeping',tasks:[]},
   {id:'marketing',label:'Marketing',color:'marketing',tasks:[]},
   {id:'pc',label:'P&C',color:'pc',tasks:[]},
+  {id:'procurement',label:'Procurement',color:'procurement',tasks:[]},
 ];
 // RENDER
 function getProgress(cat){var done=0;cat.tasks.forEach(function(t,ti){if(allSubsDone(cat,ti))done++;});return{done:done,total:cat.tasks.length,pct:cat.tasks.length?Math.round(done/cat.tasks.length*100):0};}
@@ -899,7 +901,7 @@ function catCardHTML(cat,ci){
 }
 function renderControlBar(){
   var isOverview=activeTab==='all';
-  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'},{id:'housekeeping',label:'Housekeeping'},{id:'marketing',label:'Marketing'},{id:'pc',label:'P&C'}];
+  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'},{id:'housekeeping',label:'Housekeeping'},{id:'marketing',label:'Marketing'},{id:'pc',label:'P&C'},{id:'procurement',label:'Procurement'}];
   var tabsHTML=isOverview?tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join(''):'';
   var fLabels={all:'All',duesoon:'Due Soon',overdue:'Overdue',todo:'To Do',done:'Done'};
   var filtersHTML=['all','duesoon','overdue','todo','done'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'"'+(f==='overdue'?' style="border-color:var(--red);'+(activeFilter===f?'background:var(--red);color:var(--bg)':'color:var(--red)')+'"':f==='duesoon'?' style="border-color:var(--people);'+(activeFilter===f?'background:var(--people);color:var(--bg)':'color:var(--people)')+'"':'')+' onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
@@ -950,6 +952,11 @@ function renderTabContent(){
     if(pccat)html+='<div class="grid single-tab">'+catCardHTML(pccat,0)+'</div>';
     html+='<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;opacity:.6">P&amp;C content coming soon</div>';
     html+=tasksHTML('pc');
+  } else if(activeTab==='procurement'){
+    var prcat=categories.find(function(c){return c.id==='procurement';});
+    if(prcat)html+='<div class="grid single-tab">'+catCardHTML(prcat,0)+'</div>';
+    html+='<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;opacity:.6">Procurement content coming soon</div>';
+    html+=tasksHTML('procurement');
   } else if(activeTab==='housekeeping'){
     var hcat=categories.find(function(c){return c.id==='housekeeping';});
     if(hcat)html+='<div class="grid single-tab">'+catCardHTML(hcat,0)+'</div>';
@@ -1019,7 +1026,7 @@ function renderWorklog(){
     '<span class="wl-chevron'+(wlOpen?' open':'')+'">'+( wlOpen?'\u25bc':'\u25b6')+'</span>'+
     '</div>'+bodyHTML+'</div>';
 }
-function toggleArchivedTasks(){var el=document.getElementById('archivedTasks');var btn=el?el.previousElementSibling:null;if(!el||!btn)return;if(el.style.display==='none'){var fs=getFS();var archived=fs.projects.filter(function(p){if(!p.archived)return false;if(activeTab!=='all'&&(p.category||'general')!==activeTab)return false;return true;});el.innerHTML='<div class="tasks-inner-grid" style="margin-top:.75rem">'+archived.map(function(p){return'<div class="task-card" style="opacity:.45"><div class="task-card-name">'+p.name+'</div><div class="task-card-ts">'+(p.completedTs?fmtTs(p.completedTs):'archived')+'</div></div>';}).join('')+'</div>';el.style.display='block';btn.textContent='\u25bc hide archived';}else{el.style.display='none';renderTabContent();}}
+function toggleArchivedTasks(){var el=document.getElementById('archivedTasks');var btn=el?el.previousElementSibling:null;if(!el||!btn)return;if(el.style.display==='none'){var fs=getFS();var archived=fs.projects.filter(function(p){if(!p.archived)return false;if(activeTab!=='all'&&(p.category||'general')!==activeTab)return false;return true;});el.innerHTML='<div class="tasks-inner-grid" style="margin-top:.75rem">'+archived.map(function(p){var steps=p.steps||[];var doneCount=steps.filter(function(s){return s.done;}).length;var stepsHTML=steps.length?'<ul style="list-style:none;margin:.5rem 0 0;padding:0;display:flex;flex-direction:column;gap:.2rem">'+steps.map(function(s){return'<li style="display:flex;align-items:flex-start;gap:.4rem;font-size:.6rem;color:'+(s.done?'var(--muted)':'var(--text)')+'"><span style="flex-shrink:0;margin-top:.05rem">'+(s.done?'\u2713':'\u25cb')+'</span><span style="'+(s.done?'text-decoration:line-through;opacity:.5':'')+'">'+s.text+'</span></li>';}).join('')+'</ul>':'';return'<div class="task-card" style="opacity:.5"><div class="task-card-name">'+p.name+'</div>'+(steps.length?'<div style="font-size:.58rem;color:var(--muted);margin:.25rem 0 .1rem">'+doneCount+'/'+steps.length+' steps</div>':'')+stepsHTML+'<div class="task-card-ts">'+(p.completedTs?fmtTs(p.completedTs):'archived')+'</div></div>';}).join('')+'</div>';el.style.display='block';btn.textContent='\u25bc hide archived';}else{el.style.display='none';renderTabContent();}}
 function renderTravelClaims(){
   var fs=getFS();var now=new Date();var day=now.getDate();
   var batches=fs.travelBatches||[];var activeBatch=batches.find(function(b){return!b.submitted;})||{trips:[],submitted:false};
