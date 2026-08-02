@@ -32,7 +32,8 @@ html{overflow-x:hidden;}
 #appScreen{display:none;}
 .grain{position:fixed;inset:0;pointer-events:none;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:128px;}
 header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
-.header-logo{height:36px;width:auto;display:block;}
+.header-left h1{font-family:'Onest',sans-serif;font-weight:900;font-size:2.8rem;line-height:1;letter-spacing:-.02em;}
+.header-left h1 span{font-style:italic;color:var(--muted);}
 .header-right{text-align:right;}
 .date-display{font-size:.75rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
 .week-indicator{font-size:.7rem;color:var(--muted);margin-top:.25rem;}
@@ -250,7 +251,8 @@ footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);dis
 .sidebar{position:fixed;top:0;left:0;height:100vh;width:260px;background:var(--surface);border-right:1px solid var(--border);z-index:200;transform:translateX(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column;backdrop-filter:blur(8px);}
 .sidebar.open{transform:translateX(0);}
 .sidebar-head{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 1.25rem 1rem;border-bottom:1px solid var(--border);}
-.sidebar-brand-logo{padding:.25rem 0;}
+.sidebar-brand{font-family:'Onest',sans-serif;font-weight:900;font-size:1.15rem;line-height:1;}
+.sidebar-brand em{font-style:italic;color:var(--muted);}
 .sidebar-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:.2rem .35rem;border-radius:4px;transition:color .2s;}
 .sidebar-close:hover{color:var(--text);}
 .sidebar-nav{padding:.5rem 0;flex:1;}
@@ -331,10 +333,10 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 /* Modal backdrop blur */
 .modal-overlay{backdrop-filter:blur(4px);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-@media(max-width:800px){.grid{grid-template-columns:1fr;}.card.full{grid-column:1;}.summary-row{grid-template-columns:repeat(3,1fr);}.header-logo{height:28px;}.tasks-inner-grid{grid-template-columns:1fr 1fr;}.wl-stats-row{grid-template-columns:1fr 1fr;}.tasks-summary-row,.travel-stats{grid-template-columns:1fr 1fr 1fr;}}
+@media(max-width:800px){.grid{grid-template-columns:1fr;}.card.full{grid-column:1;}.summary-row{grid-template-columns:repeat(3,1fr);}.header-left h1{font-size:1.8rem;}.tasks-inner-grid{grid-template-columns:1fr 1fr;}.wl-stats-row{grid-template-columns:1fr 1fr;}.tasks-summary-row,.travel-stats{grid-template-columns:1fr 1fr 1fr;}}
 @media(max-width:500px){
   body{padding:1rem .75rem;}
-  .header-logo{height:24px;}
+  .header-left h1{font-size:1.5rem;}
   .summary-row{grid-template-columns:repeat(2,1fr);gap:.4rem;}
   .summary-num{font-size:1.6rem;}
   .summary-card{padding:.75rem .5rem;}
@@ -376,12 +378,7 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 <div class="sidebar-scrim" id="sidebarScrim" onclick="closeSidebar()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-head">
-    <div class="sidebar-brand-logo"><svg viewBox="0 0 95 125" xmlns="http://www.w3.org/2000/svg" style="width:90px;display:block;margin:0 auto" aria-label="Bob">    <line x1="16" y1="22" x2="16" y2="72" stroke-width="11" stroke-linecap="round" stroke="white"/>
-    <circle cx="38" cy="72" r="22" stroke-width="11" fill="none" stroke="white"/>
-    <rect x="2" y="-3.5" width="26" height="7" rx="3.5" fill="white" transform="translate(57,30) rotate(-66)"/>
-    <rect x="2" y="-3.5" width="27" height="7" rx="3.5" fill="white" transform="translate(61,41) rotate(-46)"/>
-    <rect x="2" y="-3.5" width="28" height="7" rx="3.5" fill="white" transform="translate(62,52) rotate(-26)"/>
-    <rect x="2" y="-3.5" width="28" height="7" rx="3.5" fill="white" transform="translate(62,63) rotate(-10)"/><text x="47.5" y="119" font-family="'Onest',sans-serif" font-weight="900" font-size="22" fill="white" text-anchor="middle">bob</text></svg><div style="text-align:center;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);opacity:.65;margin-top:.3rem">Admin Master</div></div>
+    <div class="sidebar-brand">Admin <em>Master</em></div>
     <button class="sidebar-close" onclick="closeSidebar()">&#x2715;</button>
   </div>
   <nav class="sidebar-nav">
@@ -405,12 +402,7 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
   </nav>
 </aside>
 <header>
-  <div class="header-left" style="display:flex;align-items:center;gap:.75rem;"><button class="hamburger-btn" onclick="toggleSidebar()" title="Menu"><span></span><span></span><span></span></button><svg class="header-logo" viewBox="0 0 120 55" xmlns="http://www.w3.org/2000/svg" aria-label="Bob"><g transform="scale(0.53)">    <line x1="16" y1="22" x2="16" y2="72" stroke-width="11" stroke-linecap="round" stroke="white"/>
-    <circle cx="38" cy="72" r="22" stroke-width="11" fill="none" stroke="white"/>
-    <rect x="2" y="-3.5" width="26" height="7" rx="3.5" fill="#E8198B" transform="translate(57,30) rotate(-66)"/>
-    <rect x="2" y="-3.5" width="27" height="7" rx="3.5" fill="#E8198B" transform="translate(61,41) rotate(-46)"/>
-    <rect x="2" y="-3.5" width="28" height="7" rx="3.5" fill="#E8198B" transform="translate(62,52) rotate(-26)"/>
-    <rect x="2" y="-3.5" width="28" height="7" rx="3.5" fill="#E8198B" transform="translate(62,63) rotate(-10)"/></g><text x="56" y="37" font-family="'Onest',sans-serif" font-weight="900" font-size="28" fill="white">bob</text></svg></div>
+  <div class="header-left" style="display:flex;align-items:center;gap:.75rem;"><button class="hamburger-btn" onclick="toggleSidebar()" title="Menu"><span></span><span></span><span></span></button><h1>Admin <span>Master</span></h1></div>
   <div class="header-right">
     <div class="date-display" id="dateDisplay"></div>
     <div class="week-indicator" id="weekDisplay"></div>
