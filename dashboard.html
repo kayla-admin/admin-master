@@ -53,7 +53,7 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem;}
 .overview-tile{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.5rem 1rem 1rem;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;}
 .overview-tile:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
-.overview-doughnut{width:120px;height:120px;flex-shrink:0;}
+.overview-doughnut{width:100%;height:90px;flex-shrink:0;}
 .overview-tile-label{font-family:'Onest',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-top:.75rem;color:var(--text);}
 .overview-tile-sub{font-size:.6rem;color:var(--muted);margin-top:.2rem;letter-spacing:.06em;}
 .overview-add-btn{margin-top:.85rem;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .75rem;cursor:pointer;font-family:'Onest',sans-serif;transition:border-color .15s,color .15s;width:100%;}
@@ -966,23 +966,27 @@ function renderTabContent(){
       projs.forEach(function(p){p.steps.forEach(function(s){total++;if(s.done)done++;});});
       return{done:done,total:total,pct:total?Math.round(done/total*100):0};
     }
+    var sCirc=150.8;// 2π×24
     function doubleDoughnut(col,rProg,ahProg){
-      var rDash=rProg.total?Math.round(rProg.pct/100*oCircO*10)/10:0;
-      var ahDash=ahProg.total?Math.round(ahProg.pct/100*oCircI*10)/10:0;
-      var rLabel=rProg.total?rProg.done+'/'+rProg.total:'—';
-      var ahLabel=ahProg.total?ahProg.done+'/'+ahProg.total:'—';
-      return'<svg class="overview-doughnut" viewBox="0 0 100 100">'+
-        // outer ring bg + fill (recurring)
-        '<circle cx="50" cy="50" r="42" fill="none" stroke="'+col+'" stroke-width="8" opacity=".15"/>'+
-        '<circle cx="50" cy="50" r="42" fill="none" stroke="'+col+'" stroke-width="8" stroke-dasharray="'+rDash+' '+oCircO+'" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition:stroke-dasharray .6s ease"/>'+
-        // inner ring bg + fill (ad-hoc steps) — 50% opacity
-        '<circle cx="50" cy="50" r="30" fill="none" stroke="'+col+'" stroke-width="7" opacity=".12"/>'+
-        '<circle cx="50" cy="50" r="30" fill="none" stroke="'+col+'" stroke-width="7" stroke-dasharray="'+ahDash+' '+oCircI+'" stroke-linecap="round" transform="rotate(-90 50 50)" opacity=".55" style="transition:stroke-dasharray .6s ease"/>'+
-        // center labels
-        '<text x="50" y="43" text-anchor="middle" font-size="8" fill="'+col+'" font-family="Onest,sans-serif" opacity=".9">recur</text>'+
-        '<text x="50" y="52" text-anchor="middle" font-size="7.5" fill="var(--muted)" font-family="Onest,sans-serif">'+rLabel+'</text>'+
-        '<text x="50" y="62" text-anchor="middle" font-size="8" fill="'+col+'" font-family="Onest,sans-serif" opacity=".55">tasks</text>'+
-        '<text x="50" y="71" text-anchor="middle" font-size="7.5" fill="var(--muted)" font-family="Onest,sans-serif">'+ahLabel+'</text>'+
+      var rDash=rProg.total?Math.round(rProg.pct/100*sCirc*10)/10:0;
+      var ahDash=ahProg.total?Math.round(ahProg.pct/100*sCirc*10)/10:0;
+      var rPct=rProg.total?rProg.pct+'%':'—';
+      var ahPct=ahProg.total?ahProg.pct+'%':'—';
+      var rSub=rProg.total?rProg.done+'/'+rProg.total+' done':'no tasks';
+      var ahSub=ahProg.total?ahProg.done+'/'+ahProg.total+' steps':'no tasks';
+      return'<svg class="overview-doughnut" viewBox="0 0 200 90">'+
+        // LEFT circle — recurring
+        '<circle cx="48" cy="45" r="24" fill="none" stroke="'+col+'" stroke-width="7" opacity=".15"/>'+
+        '<circle cx="48" cy="45" r="24" fill="none" stroke="'+col+'" stroke-width="7" stroke-dasharray="'+rDash+' '+sCirc+'" stroke-linecap="round" transform="rotate(-90 48 45)" style="transition:stroke-dasharray .6s ease"/>'+
+        '<text x="48" y="40" text-anchor="middle" font-size="11" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif">'+rPct+'</text>'+
+        '<text x="48" y="51" text-anchor="middle" font-size="6.5" fill="var(--muted)" font-family="Onest,sans-serif">'+rSub+'</text>'+
+        '<text x="48" y="79" text-anchor="middle" font-size="7" fill="'+col+'" font-family="Onest,sans-serif" opacity=".7">Recurring</text>'+
+        // RIGHT circle — ad-hoc steps
+        '<circle cx="152" cy="45" r="24" fill="none" stroke="'+col+'" stroke-width="7" opacity=".15"/>'+
+        '<circle cx="152" cy="45" r="24" fill="none" stroke="'+col+'" stroke-width="7" stroke-dasharray="'+ahDash+' '+sCirc+'" stroke-linecap="round" transform="rotate(-90 152 45)" opacity=".65" style="transition:stroke-dasharray .6s ease"/>'+
+        '<text x="152" y="40" text-anchor="middle" font-size="11" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif" opacity=".75">'+ahPct+'</text>'+
+        '<text x="152" y="51" text-anchor="middle" font-size="6.5" fill="var(--muted)" font-family="Onest,sans-serif">'+ahSub+'</text>'+
+        '<text x="152" y="79" text-anchor="middle" font-size="7" fill="'+col+'" font-family="Onest,sans-serif" opacity=".5">Tasks</text>'+
         '</svg>';
     }
     var allTiles=categories.map(function(cat){
@@ -993,7 +997,7 @@ function renderTabContent(){
       return'<div class="overview-tile '+cat.color+'" onclick="sidebarNav(\''+cat.id+'\')">'+ring+'<div class="overview-tile-label">'+cat.label+'</div><button class="overview-add-btn" style="color:'+col+';border-color:'+col+';opacity:.7" onclick="event.stopPropagation();openModal(\'task\',{cat:\''+cat.id+'\'})">+ New Task</button></div>';
     }).join('');
     var batches2=fsOv.travelBatches||[];var actB=batches2.find(function(b){return!b.submitted;})||{trips:[]};var tc=(actB.trips||[]).length;
-    var travelRing='<svg class="overview-doughnut" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--travel)" stroke-width="8" opacity=".15"/><circle cx="50" cy="50" r="30" fill="none" stroke="var(--travel)" stroke-width="7" opacity=".12"/><text x="50" y="48" text-anchor="middle" font-size="20" font-weight="900" fill="var(--travel)" font-family="Onest,sans-serif">'+tc+'</text><text x="50" y="61" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">trips logged</text></svg>';
+    var travelRing='<svg class="overview-doughnut" viewBox="0 0 200 90"><circle cx="100" cy="45" r="24" fill="none" stroke="var(--travel)" stroke-width="7" opacity=".15"/><text x="100" y="41" text-anchor="middle" font-size="18" font-weight="900" fill="var(--travel)" font-family="Onest,sans-serif">'+tc+'</text><text x="100" y="53" text-anchor="middle" font-size="7" fill="var(--muted)" font-family="Onest,sans-serif">trips logged</text><text x="100" y="79" text-anchor="middle" font-size="7" fill="var(--travel)" font-family="Onest,sans-serif" opacity=".7">Active Batch</text></svg>';
     var travelTileH='<div class="overview-tile travel-tile" onclick="sidebarNav(\'travel\')">'+travelRing+'<div class="overview-tile-label">Travel Claims</div><button class="overview-add-btn" style="color:var(--travel);border-color:var(--travel);opacity:.7" onclick="event.stopPropagation();openModal(\'trip\')">+ Log Trip</button></div>';
     html+='<div class="overview-grid">'+allTiles+travelTileH+'</div>';
   } else if(activeTab==='general'){
