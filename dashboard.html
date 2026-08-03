@@ -954,16 +954,46 @@ function tasksHTML(catFilter){
 function renderTabContent(){
   var html='';
   if(activeTab==='all'){
-    var circ=238.76;
+    var fsOv=getFS();
+    var oCircO=263.9,oCircI=188.5;
+    function adHocProg(catId){
+      var projs=(fsOv.projects||[]).filter(function(p){
+        if(p.archived)return false;
+        var pc=p.category||'general';
+        return pc===catId||(catId==='pc'&&pc==='people');
+      });
+      var total=0,done=0;
+      projs.forEach(function(p){p.steps.forEach(function(s){total++;if(s.done)done++;});});
+      return{done:done,total:total,pct:total?Math.round(done/total*100):0};
+    }
+    function doubleDoughnut(col,rProg,ahProg){
+      var rDash=rProg.total?Math.round(rProg.pct/100*oCircO*10)/10:0;
+      var ahDash=ahProg.total?Math.round(ahProg.pct/100*oCircI*10)/10:0;
+      var rLabel=rProg.total?rProg.done+'/'+rProg.total:'—';
+      var ahLabel=ahProg.total?ahProg.done+'/'+ahProg.total:'—';
+      return'<svg class="overview-doughnut" viewBox="0 0 100 100">'+
+        // outer ring bg + fill (recurring)
+        '<circle cx="50" cy="50" r="42" fill="none" stroke="'+col+'" stroke-width="8" opacity=".15"/>'+
+        '<circle cx="50" cy="50" r="42" fill="none" stroke="'+col+'" stroke-width="8" stroke-dasharray="'+rDash+' '+oCircO+'" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition:stroke-dasharray .6s ease"/>'+
+        // inner ring bg + fill (ad-hoc steps) — 50% opacity
+        '<circle cx="50" cy="50" r="30" fill="none" stroke="'+col+'" stroke-width="7" opacity=".12"/>'+
+        '<circle cx="50" cy="50" r="30" fill="none" stroke="'+col+'" stroke-width="7" stroke-dasharray="'+ahDash+' '+oCircI+'" stroke-linecap="round" transform="rotate(-90 50 50)" opacity=".55" style="transition:stroke-dasharray .6s ease"/>'+
+        // center labels
+        '<text x="50" y="43" text-anchor="middle" font-size="8" fill="'+col+'" font-family="Onest,sans-serif" opacity=".9">recur</text>'+
+        '<text x="50" y="52" text-anchor="middle" font-size="7.5" fill="var(--muted)" font-family="Onest,sans-serif">'+rLabel+'</text>'+
+        '<text x="50" y="62" text-anchor="middle" font-size="8" fill="'+col+'" font-family="Onest,sans-serif" opacity=".55">tasks</text>'+
+        '<text x="50" y="71" text-anchor="middle" font-size="7.5" fill="var(--muted)" font-family="Onest,sans-serif">'+ahLabel+'</text>'+
+        '</svg>';
+    }
     var allTiles=categories.map(function(cat){
-      var p=getProgress(cat);
-      var dash=p.total?Math.round(p.pct/100*circ*10)/10:0;
+      var rp=getProgress(cat);
+      var ap=adHocProg(cat.id);
       var col='var(--'+cat.color+')';
-      var ring='<svg class="overview-doughnut" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="'+col+'" stroke-width="9" opacity=".15"/><circle cx="50" cy="50" r="38" fill="none" stroke="'+col+'" stroke-width="9" stroke-dasharray="'+dash+' '+circ+'" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition:stroke-dasharray .5s ease"/><text x="50" y="46" text-anchor="middle" font-size="17" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif">'+p.pct+'%</text><text x="50" y="60" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">'+p.done+'/'+p.total+'</text></svg>';
+      var ring=doubleDoughnut(col,rp,ap);
       return'<div class="overview-tile '+cat.color+'" onclick="sidebarNav(\''+cat.id+'\')">'+ring+'<div class="overview-tile-label">'+cat.label+'</div><button class="overview-add-btn" style="color:'+col+';border-color:'+col+';opacity:.7" onclick="event.stopPropagation();openModal(\'task\',{cat:\''+cat.id+'\'})">+ New Task</button></div>';
     }).join('');
-    var fs2=getFS();var batches2=fs2.travelBatches||[];var actB=batches2.find(function(b){return!b.submitted;})||{trips:[]};var tc=(actB.trips||[]).length;
-    var travelRing='<svg class="overview-doughnut" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="var(--travel)" stroke-width="9" opacity=".15"/><text x="50" y="46" text-anchor="middle" font-size="17" font-weight="900" fill="var(--travel)" font-family="Onest,sans-serif">'+tc+'</text><text x="50" y="60" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">trips</text></svg>';
+    var batches2=fsOv.travelBatches||[];var actB=batches2.find(function(b){return!b.submitted;})||{trips:[]};var tc=(actB.trips||[]).length;
+    var travelRing='<svg class="overview-doughnut" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--travel)" stroke-width="8" opacity=".15"/><circle cx="50" cy="50" r="30" fill="none" stroke="var(--travel)" stroke-width="7" opacity=".12"/><text x="50" y="48" text-anchor="middle" font-size="20" font-weight="900" fill="var(--travel)" font-family="Onest,sans-serif">'+tc+'</text><text x="50" y="61" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">trips logged</text></svg>';
     var travelTileH='<div class="overview-tile travel-tile" onclick="sidebarNav(\'travel\')">'+travelRing+'<div class="overview-tile-label">Travel Claims</div><button class="overview-add-btn" style="color:var(--travel);border-color:var(--travel);opacity:.7" onclick="event.stopPropagation();openModal(\'trip\')">+ Log Trip</button></div>';
     html+='<div class="overview-grid">'+allTiles+travelTileH+'</div>';
   } else if(activeTab==='general'){
