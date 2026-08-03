@@ -384,7 +384,7 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
   <nav class="sidebar-nav">
     <div class="sidebar-item active" data-tab="all" style="--item-color:var(--text)" onclick="sidebarNav('all')"><div class="sidebar-dot"></div><span class="sidebar-label">Overview</span></div>
     <div class="sidebar-divider"></div>
-    <div class="sidebar-item" data-tab="people" style="--item-color:var(--people)" onclick="sidebarNav('people')"><div class="sidebar-dot"></div><span class="sidebar-label">People</span></div>
+    <div class="sidebar-item" data-tab="general" style="--item-color:var(--leadership)" onclick="sidebarNav('general')"><div class="sidebar-dot"></div><span class="sidebar-label">General</span></div>
     <div class="sidebar-item" data-tab="expenses" style="--item-color:var(--expenses)" onclick="sidebarNav('expenses')"><div class="sidebar-dot"></div><span class="sidebar-label">Expenses</span></div>
     <div class="sidebar-item" data-tab="leadership" style="--item-color:var(--leadership)" onclick="sidebarNav('leadership')"><div class="sidebar-dot"></div><span class="sidebar-label">Leadership</span></div>
     <div class="sidebar-item" data-tab="ohs" style="--item-color:var(--ohs)" onclick="sidebarNav('ohs')"><div class="sidebar-dot"></div><span class="sidebar-label">H&amp;S</span></div>
@@ -687,7 +687,7 @@ function editTask(id){
   var cg=document.createElement('div');cg.className='form-group';
   var cl=document.createElement('label');cl.className='form-label';cl.textContent='Category';
   var cs=document.createElement('select');cs.className='form-select';cs.id='mTaskCategory';
-  [['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C'],['procurement','Procurement']].forEach(function(opt){
+  [['general','General'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C'],['procurement','Procurement']].forEach(function(opt){
     var o=document.createElement('option');o.value=opt[0];o.textContent=opt[1];if((proj.category||'general')===opt[0])o.selected=true;cs.appendChild(o);
   });
   cg.appendChild(cl);cg.appendChild(cs);body.appendChild(cg);
@@ -725,12 +725,12 @@ function openModal(mode){
   else if(mode==='offboarding'){title.textContent='New Leaver';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. John Doe"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Last Day</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOffboarding()">Create Checklist</button></div>';}
   else if(mode==='task'){
     var precat=activeTab!=='all'?activeTab:'general';
-    var catOpts=[{v:'general',l:'General'},{v:'people',l:'People'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'},{v:'housekeeping',l:'Housekeeping'},{v:'travel',l:'Travel Claims'},{v:'marketing',l:'Marketing'},{v:'pc',l:'P&C'},{v:'procurement',l:'Procurement'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
+    var catOpts=[{v:'general',l:'General'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'},{v:'housekeeping',l:'Housekeeping'},{v:'travel',l:'Travel Claims'},{v:'marketing',l:'Marketing'},{v:'pc',l:'P&C'},{v:'procurement',l:'Procurement'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
     title.textContent='New Task';
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><div style="display:flex;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap">'+['Today','+ 1 Day','+ 3 Days','+ 7 Days'].map(function(l,i){var d=new Date();d.setDate(d.getDate()+[0,1,3,7][i]);var v=d.toISOString().slice(0,10);return'<button type="button" onclick="document.getElementById(\'mTaskDue\').value=\''+v+'\'" style="font-family:\'DM Mono\',monospace;font-size:.6rem;letter-spacing:.06em;padding:.25rem .6rem;border:1px solid var(--border);border-radius:2px;background:none;color:var(--muted);cursor:pointer">'+l+'</button>';}).join('')+'</div><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
   }
   else if(mode==='backdate'){
-    var catOpts=[['general','General'],['people','People'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C'],['procurement','Procurement']].map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>';}).join('');
+    var catOpts=[['general','General'],['expenses','Expenses'],['leadership','Leadership'],['ohs','H&S'],['facilities','Facilities'],['events','Events'],['housekeeping','Housekeeping'],['travel','Travel Claims'],['marketing','Marketing'],['pc','P&C'],['procurement','Procurement']].map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>';}).join('');
     title.textContent='Add Past Entry';
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mBdName" placeholder="e.g. Weekly groceries \u2014 Menlyn"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mBdCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="form-group"><label class="form-label">Date Completed</label><input class="form-input" id="mBdDate" type="date"/></div><div class="form-group"><label class="form-label">Time <span style="opacity:.5;font-size:.9em">(defaults to 09:00)</span></label><input class="form-input" id="mBdTime" type="time" value="09:00"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitBackdate()">Add Entry</button></div>';
   }
@@ -803,7 +803,7 @@ function exportReport(personal){
 }
 // CATEGORIES
 var categories=[
-  {id:'people',label:'People',color:'people',tasks:[{text:'Check birthday list & upcoming birthdays',freq:'monthly'}]},
+  {id:'general',label:'General',color:'leadership',tasks:[]},
   {id:'expenses',label:'Expenses',color:'expenses',tasks:[
     {text:'Weekly groceries',freq:'weekly',subs:[{text:'Menlyn',note:'physical shopping'},{text:'Bryanston',note:'online \u2014 order Wed, delivers Mon'}]},
     {text:'Monthly groceries \u2014 Makro orders',freq:'monthly',subs:[{text:'Menlyn office',note:'Makro'},{text:'Bryanston office',note:'Makro'},{text:'Durban',note:'Makro'},{text:'PE',note:'Makro'},{text:'Cape Town',note:'WFH \u2014 hold for warehouse'}]},
@@ -873,7 +873,7 @@ var categories=[
   ]},
   {id:'housekeeping',label:'Housekeeping',color:'housekeeping',tasks:[]},
   {id:'marketing',label:'Marketing',color:'marketing',tasks:[]},
-  {id:'pc',label:'P&C',color:'pc',tasks:[]},
+  {id:'pc',label:'P&C',color:'pc',tasks:[{text:'Check birthday list & upcoming birthdays',freq:'monthly'}]},
   {id:'procurement',label:'Procurement',color:'procurement',tasks:[]},
 ];
 // RENDER
@@ -897,14 +897,14 @@ function catCardHTML(cat,ci){
     return'<li class="task-item'+(isDone?' done':'')+(hasSubs?' has-sub':'')+'"><div class="task-main" onclick="'+mc+'">'+(!hasSubs?'<div class="checkbox"></div>':'<span class="expand-btn" id="btn_'+uid2+'">\u25b6</span>')+'<span class="task-text">'+task.text+'</span><div class="task-meta">'+(hasSubs?'<span class="sub-progress">'+spDone+'/'+spTotal+'</span>':'')+'<span class="task-freq">'+task.freq+'</span><span class="task-reset">'+nextReset(task.freq)+'</span></div></div>'+subHTML+'</li>';
   }).join('');
   var extra='';
-  if(cat.id==='people'){var fsP=getFS();var aOn=fsP.onboardings.filter(function(i){return!i.archived;});var aOff=fsP.offboardings.filter(function(i){return!i.archived;});if(aOn.length||aOff.length){extra='<div class="people-instances-inline">'+aOn.map(function(i){return renderPersonInstance('on',i);}).join('')+aOff.map(function(i){return renderPersonInstance('off',i);}).join('')+'</div>';}}
-  var ib=cat.id==='people'?'<div class="card-header-right"><button class="add-btn green" onclick="openModal(\'onboarding\')">+ New Starter</button><button class="add-btn red" onclick="openModal(\'offboarding\')">+ New Leaver</button></div>':'';
+  if(cat.id==='pc'){var fsP=getFS();var aOn=fsP.onboardings.filter(function(i){return!i.archived;});var aOff=fsP.offboardings.filter(function(i){return!i.archived;});if(aOn.length||aOff.length){extra='<div class="people-instances-inline">'+aOn.map(function(i){return renderPersonInstance('on',i);}).join('')+aOff.map(function(i){return renderPersonInstance('off',i);}).join('')+'</div>';}}
+  var ib=cat.id==='pc'?'<div class="card-header-right"><button class="add-btn green" onclick="openModal(\'onboarding\')">+ New Starter</button><button class="add-btn red" onclick="openModal(\'offboarding\')">+ New Leaver</button></div>':'';
   var isLast=activeTab==='all'&&ci===categories.length-1&&categories.length%2!==0;
   return'<div class="card '+cat.color+(isLast?' full':'')+'" style="animation-delay:'+(0.15+ci*0.08)+'s"><div class="card-header"><div class="dot"></div><div class="card-title">'+cat.label+'</div>'+ib+'</div><ul class="task-list">'+tasks+'</ul>'+extra+'<div class="progress-bar"><div class="progress-fill" style="width:'+p.pct+'%"></div></div><div class="progress-label">'+p.done+' of '+p.total+' done this period</div></div>';
 }
 function renderControlBar(){
   var isOverview=activeTab==='all';
-  var tabs=[{id:'all',label:'All'},{id:'people',label:'People'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'},{id:'housekeeping',label:'Housekeeping'},{id:'marketing',label:'Marketing'},{id:'pc',label:'P&C'},{id:'procurement',label:'Procurement'}];
+  var tabs=[{id:'all',label:'All'},{id:'general',label:'General'},{id:'expenses',label:'Expenses'},{id:'leadership',label:'Leadership'},{id:'ohs',label:'H&S'},{id:'facilities',label:'Facilities'},{id:'events',label:'Events'},{id:'housekeeping',label:'Housekeeping'},{id:'marketing',label:'Marketing'},{id:'pc',label:'P&C'},{id:'procurement',label:'Procurement'}];
   var tabsHTML=isOverview?tabs.map(function(t){return'<button class="tab-btn'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="setTab(\''+t.id+'\')">'+t.label+'</button>';}).join(''):'';
   var fLabels={all:'All',duesoon:'Due Soon',overdue:'Overdue',todo:'To Do',done:'Done'};
   var filtersHTML=['all','duesoon','overdue','todo','done'].map(function(f){return'<button class="filter-btn'+(activeFilter===f?' active':'')+'"'+(f==='overdue'?' style="border-color:var(--red);'+(activeFilter===f?'background:var(--red);color:var(--bg)':'color:var(--red)')+'"':f==='duesoon'?' style="border-color:var(--people);'+(activeFilter===f?'background:var(--people);color:var(--bg)':'color:var(--people)')+'"':'')+' onclick="setFilter(\''+f+'\')">'+fLabels[f]+'</button>';}).join('');
@@ -915,7 +915,7 @@ function tasksHTML(catFilter){
   var fs=getFS();
   var active=fs.projects.filter(function(p){
     if(p.archived)return false;
-    if(catFilter&&catFilter!=='all'&&(p.category||'general')!==catFilter)return false;
+    if(catFilter&&catFilter!=='all'){var pCat=p.category||'general';var match=pCat===catFilter||(catFilter==='pc'&&pCat==='people');if(!match)return false;}
     var allDone=p.steps.every(function(s){return s.done;});
     if(activeFilter==='todo'&&allDone)return false;
     if(activeFilter==='done'&&!allDone)return false;
@@ -923,7 +923,7 @@ function tasksHTML(catFilter){
     if(searchQuery){var m=p.name.toLowerCase().indexOf(searchQuery)!==-1;if(!m)m=p.steps.some(function(s){return s.text.toLowerCase().indexOf(searchQuery)!==-1;});if(!m)return false;}
     return true;
   });
-  var archived=fs.projects.filter(function(p){if(!p.archived)return false;if(catFilter&&catFilter!=='all'&&(p.category||'general')!==catFilter)return false;return true;});
+  var archived=fs.projects.filter(function(p){if(!p.archived)return false;if(catFilter&&catFilter!=='all'){var pCat=p.category||'general';var match=pCat===catFilter||(catFilter==='pc'&&pCat==='people');if(!match)return false;}return true;});
   var doneSteps=0;active.forEach(function(p){p.steps.forEach(function(s){if(s.done)doneSteps++;});});
   var statsHTML='<div class="tasks-summary-row"><div class="tasks-summary-card"><div class="tasks-summary-num">'+active.length+'</div><div class="tasks-summary-label">Active</div></div><div class="tasks-summary-card"><div class="tasks-summary-num">'+doneSteps+'</div><div class="tasks-summary-label">Steps Done</div></div><div class="tasks-summary-card"><div class="tasks-summary-num">'+archived.length+'</div><div class="tasks-summary-label">Archived</div></div></div>';
   var cardsH=active.length?'<div class="tasks-inner-grid">'+active.map(function(proj){
@@ -943,6 +943,10 @@ function renderTabContent(){
   if(activeTab==='all'){
     html+=tasksHTML('all');
     html+='<div class="grid">'+categories.map(function(cat,ci){return catCardHTML(cat,ci);}).join('')+'</div>';
+  } else if(activeTab==='general'){
+    var gcat=categories.find(function(c){return c.id==='general';});
+    if(gcat)html+='<div class="grid single-tab">'+catCardHTML(gcat,0)+'</div>';
+    html+=tasksHTML('general');
   } else if(activeTab==='travel'||activeTab==='worklog'){
     // handled by renderAll — just clear this area
   } else if(activeTab==='marketing'){
