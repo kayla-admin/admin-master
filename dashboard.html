@@ -12,7 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#080807;--surface:#141412;--surface2:#1c1c1a;--surface3:#111110;--border:#2a2a24;--text:#f0ede6;--muted:#7a7a6e;--people:#c9a96e;--expenses:#7eb89a;--leadership:#a89bc9;--ohs:#c97a7a;--facilities:#7aafc9;--events:#c97aab;--housekeeping:#b8956a;--marketing:#7ec9b8;--pc:#c97ac9;--procurement:#a8c97a;--green:#7eb89a;--red:#c97a7a;--travel:#e8a87c;}
+:root{--bg:#06040e;--surface:#100d1d;--surface2:#160f28;--surface3:#0a0815;--border:#2d2242;--text:#f0ede6;--muted:#8a829a;--people:#c9a96e;--general:#a59bbd;--expenses:#ff7212;--leadership:#61508c;--ohs:#d8328d;--facilities:#007af9;--events:#6bc630;--housekeeping:#ffc7a0;--marketing:#139e83;--pc:#e46faf;--procurement:#97d76e;--green:#6bc630;--red:#c97a7a;--travel:#4ca2fb;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Onest',sans-serif;min-height:100vh;padding:2rem;overflow-x:hidden;}
 html{overflow-x:hidden;}
@@ -53,7 +53,7 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;}
 .overview-tile{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.5rem 1rem 1rem;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;}
 .overview-tile:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
-.overview-doughnut{width:100%;height:160px;flex-shrink:0;}
+.overview-doughnut{width:100%;height:210px;flex-shrink:0;}
 .overview-tile-label{font-family:'Onest',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-top:.75rem;color:var(--text);}
 .overview-tile-sub{font-size:.6rem;color:var(--muted);margin-top:.2rem;letter-spacing:.06em;}
 .overview-add-btn{margin-top:.85rem;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .75rem;cursor:pointer;font-family:'Onest',sans-serif;transition:border-color .15s,color .15s;width:100%;}
@@ -314,14 +314,18 @@ header{position:sticky;top:0;z-index:50;background:var(--bg);padding-bottom:1.25
 body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1px);background-size:28px 28px;}
 /* Card coloured top border + hover glow */
 .card{transition:box-shadow .3s,transform .25s;position:relative;--cursor-angle:180deg;--card-glow-color:rgba(255,255,255,.3);}
-.card.people{border-top:2px solid var(--people);--card-glow-color:var(--people);}.card.expenses{border-top:2px solid var(--expenses);--card-glow-color:var(--expenses);}.card.leadership{border-top:2px solid var(--leadership);--card-glow-color:var(--leadership);}.card.ohs{border-top:2px solid var(--ohs);--card-glow-color:var(--ohs);}.card.facilities{border-top:2px solid var(--facilities);--card-glow-color:var(--facilities);}.card.events{border-top:2px solid var(--events);--card-glow-color:var(--events);}.card.housekeeping{border-top:2px solid var(--housekeeping);--card-glow-color:var(--housekeeping);}
+.card.general{border-top:2px solid var(--general);--card-glow-color:var(--general);}.card.people{border-top:2px solid var(--people);--card-glow-color:var(--people);}.card.expenses{border-top:2px solid var(--expenses);--card-glow-color:var(--expenses);}.card.leadership{border-top:2px solid var(--leadership);--card-glow-color:var(--leadership);}.card.ohs{border-top:2px solid var(--ohs);--card-glow-color:var(--ohs);}.card.facilities{border-top:2px solid var(--facilities);--card-glow-color:var(--facilities);}.card.events{border-top:2px solid var(--events);--card-glow-color:var(--events);}.card.housekeeping{border-top:2px solid var(--housekeeping);--card-glow-color:var(--housekeeping);}.card.marketing{border-top:2px solid var(--marketing);--card-glow-color:var(--marketing);}.card.pc{border-top:2px solid var(--pc);--card-glow-color:var(--pc);}.card.procurement{border-top:2px solid var(--procurement);--card-glow-color:var(--procurement);}
+.card.general:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(165,155,189,.2);}
 .card.people:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,169,110,.18);}
-.card.expenses:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(126,184,154,.18);}
-.card.leadership:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(168,155,201,.18);}
-.card.ohs:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,122,122,.18);}
-.card.facilities:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(122,175,201,.18);}
-.card.events:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,122,171,.18);}
-.card.housekeeping:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(184,149,106,.18);}
+.card.expenses:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,114,18,.2);}
+.card.leadership:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(97,80,140,.25);}
+.card.ohs:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(216,50,141,.2);}
+.card.facilities:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,122,249,.2);}
+.card.events:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(107,198,48,.2);}
+.card.housekeeping:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,199,160,.15);}
+.card.marketing:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(19,158,131,.2);}
+.card.pc:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(228,111,175,.2);}
+.card.procurement:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(151,215,110,.2);}
 /* Border Glow */
 .card,.task-card,.overview-tile{--cursor-angle:180deg;--card-glow-opacity:0;}
 .task-card{--card-glow-color:var(--leadership);}
@@ -815,7 +819,7 @@ function exportReport(personal){
 }
 // CATEGORIES
 var categories=[
-  {id:'general',label:'General',color:'leadership',tasks:[]},
+  {id:'general',label:'General',color:'general',tasks:[]},
   {id:'expenses',label:'Expenses',color:'expenses',tasks:[
     {text:'Weekly groceries',freq:'weekly',subs:[{text:'Menlyn',note:'physical shopping'},{text:'Bryanston',note:'online \u2014 order Wed, delivers Mon'}]},
     {text:'Monthly groceries \u2014 Makro orders',freq:'monthly',subs:[{text:'Menlyn office',note:'Makro'},{text:'Bryanston office',note:'Makro'},{text:'Durban',note:'Makro'},{text:'PE',note:'Makro'},{text:'Cape Town',note:'WFH \u2014 hold for warehouse'}]},
@@ -967,7 +971,7 @@ function renderTabContent(){
       projs.forEach(function(p){p.steps.forEach(function(s){total++;if(s.done)done++;});});
       return{done:done,total:total,pct:total?Math.round(done/total*100):0};
     }
-    var sCirc=238.76;// 2π×38
+    var sCirc=263.9;// 2π×42
     function doubleDoughnut(col,rProg,ahProg){
       var rDash=rProg.total?Math.round(rProg.pct/100*sCirc*10)/10:0;
       var ahDash=ahProg.total?Math.round(ahProg.pct/100*sCirc*10)/10:0;
@@ -975,19 +979,17 @@ function renderTabContent(){
       var ahPct=ahProg.total?ahProg.pct+'%':'—';
       var rSub=rProg.total?rProg.done+'/'+rProg.total+' done':'no tasks';
       var ahSub=ahProg.total?ahProg.done+'/'+ahProg.total+' steps':'no tasks';
-      return'<svg class="overview-doughnut" viewBox="0 0 220 150">'+
-        // LEFT circle — recurring (cx=55, cy=68, r=38)
-        '<circle cx="55" cy="68" r="38" fill="none" stroke="'+col+'" stroke-width="9" opacity=".15"/>'+
-        '<circle cx="55" cy="68" r="38" fill="none" stroke="'+col+'" stroke-width="9" stroke-dasharray="'+rDash+' '+sCirc+'" stroke-linecap="round" transform="rotate(-90 55 68)" style="transition:stroke-dasharray .6s ease"/>'+
-        '<text x="55" y="62" text-anchor="middle" font-size="16" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif">'+rPct+'</text>'+
-        '<text x="55" y="75" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="Onest,sans-serif">'+rSub+'</text>'+
-        '<text x="55" y="121" text-anchor="middle" font-size="9" fill="'+col+'" font-family="Onest,sans-serif" opacity=".7">Recurring</text>'+
-        // RIGHT circle — ad-hoc steps (cx=165, cy=68, r=38)
-        '<circle cx="165" cy="68" r="38" fill="none" stroke="'+col+'" stroke-width="9" opacity=".15"/>'+
-        '<circle cx="165" cy="68" r="38" fill="none" stroke="'+col+'" stroke-width="9" stroke-dasharray="'+ahDash+' '+sCirc+'" stroke-linecap="round" transform="rotate(-90 165 68)" opacity=".6" style="transition:stroke-dasharray .6s ease"/>'+
-        '<text x="165" y="62" text-anchor="middle" font-size="16" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif" opacity=".8">'+ahPct+'</text>'+
-        '<text x="165" y="75" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="Onest,sans-serif">'+ahSub+'</text>'+
-        '<text x="165" y="121" text-anchor="middle" font-size="9" fill="'+col+'" font-family="Onest,sans-serif" opacity=".5">Tasks</text>'+
+      return'<svg class="overview-doughnut" viewBox="0 0 200 130">'+
+        '<circle cx="48" cy="58" r="42" fill="none" stroke="'+col+'" stroke-width="9" opacity=".15"/>'+
+        '<circle cx="48" cy="58" r="42" fill="none" stroke="'+col+'" stroke-width="9" stroke-dasharray="'+rDash+' '+sCirc+'" stroke-linecap="round" transform="rotate(-90 48 58)" style="transition:stroke-dasharray .6s ease"/>'+
+        '<text x="48" y="52" text-anchor="middle" font-size="16" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif">'+rPct+'</text>'+
+        '<text x="48" y="65" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="Onest,sans-serif">'+rSub+'</text>'+
+        '<text x="48" y="115" text-anchor="middle" font-size="9" fill="'+col+'" font-family="Onest,sans-serif" opacity=".7">Recurring</text>'+
+        '<circle cx="152" cy="58" r="42" fill="none" stroke="'+col+'" stroke-width="9" opacity=".15"/>'+
+        '<circle cx="152" cy="58" r="42" fill="none" stroke="'+col+'" stroke-width="9" stroke-dasharray="'+ahDash+' '+sCirc+'" stroke-linecap="round" transform="rotate(-90 152 58)" opacity=".6" style="transition:stroke-dasharray .6s ease"/>'+
+        '<text x="152" y="52" text-anchor="middle" font-size="16" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif" opacity=".85">'+ahPct+'</text>'+
+        '<text x="152" y="65" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="Onest,sans-serif">'+ahSub+'</text>'+
+        '<text x="152" y="115" text-anchor="middle" font-size="9" fill="'+col+'" font-family="Onest,sans-serif" opacity=".5">Tasks</text>'+
         '</svg>';
     }
     var allTiles=categories.map(function(cat){
@@ -998,7 +1000,7 @@ function renderTabContent(){
       return'<div class="overview-tile '+cat.color+'" onclick="sidebarNav(\''+cat.id+'\')">'+ring+'<div class="overview-tile-label">'+cat.label+'</div><button class="overview-add-btn" style="color:'+col+';border-color:'+col+';opacity:.7" onclick="event.stopPropagation();openModal(\'task\',{cat:\''+cat.id+'\'})">+ New Task</button></div>';
     }).join('');
     var batches2=fsOv.travelBatches||[];var actB=batches2.find(function(b){return!b.submitted;})||{trips:[]};var tc=(actB.trips||[]).length;
-    var travelRing='<svg class="overview-doughnut" viewBox="0 0 220 150"><circle cx="110" cy="68" r="38" fill="none" stroke="var(--travel)" stroke-width="9" opacity=".15"/><text x="110" y="62" text-anchor="middle" font-size="24" font-weight="900" fill="var(--travel)" font-family="Onest,sans-serif">'+tc+'</text><text x="110" y="78" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">trips logged</text><text x="110" y="121" text-anchor="middle" font-size="9" fill="var(--travel)" font-family="Onest,sans-serif" opacity=".7">Active Batch</text></svg>';
+    var travelRing='<svg class="overview-doughnut" viewBox="0 0 200 130"><circle cx="100" cy="58" r="42" fill="none" stroke="var(--travel)" stroke-width="9" opacity=".15"/><text x="100" y="52" text-anchor="middle" font-size="26" font-weight="900" fill="var(--travel)" font-family="Onest,sans-serif">'+tc+'</text><text x="100" y="67" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">trips logged</text><text x="100" y="115" text-anchor="middle" font-size="9" fill="var(--travel)" font-family="Onest,sans-serif" opacity=".7">Active Batch</text></svg>';
     var travelTileH='<div class="overview-tile travel-tile" onclick="sidebarNav(\'travel\')">'+travelRing+'<div class="overview-tile-label">Travel Claims</div><button class="overview-add-btn" style="color:var(--travel);border-color:var(--travel);opacity:.7" onclick="event.stopPropagation();openModal(\'trip\')">+ Log Trip</button></div>';
     html+='<div class="overview-grid">'+allTiles+travelTileH+'</div>';
   } else if(activeTab==='general'){
