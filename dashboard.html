@@ -50,6 +50,15 @@ header{display:flex;justify-content:space-between;align-items:flex-end;margin-bo
 .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem .75rem;text-align:center;}
 .summary-num{font-family:'Onest',sans-serif;font-weight:900;font-size:2rem;line-height:1;margin-bottom:.25rem;}
 .summary-label{font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem;}
+.overview-tile{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.5rem 1rem 1rem;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;}
+.overview-tile:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.overview-doughnut{width:120px;height:120px;flex-shrink:0;}
+.overview-tile-label{font-family:'Onest',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-top:.75rem;color:var(--text);}
+.overview-tile-sub{font-size:.6rem;color:var(--muted);margin-top:.2rem;letter-spacing:.06em;}
+.overview-add-btn{margin-top:.85rem;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .75rem;cursor:pointer;font-family:'Onest',sans-serif;transition:border-color .15s,color .15s;width:100%;}
+.overview-add-btn:hover{border-color:currentColor;color:var(--text);}
+.overview-tile.travel-tile{cursor:pointer;}
 .people .summary-num{color:var(--people);}.expenses .summary-num{color:var(--expenses);}.leadership .summary-num{color:var(--leadership);}.ohs .summary-num{color:var(--ohs);}.facilities .summary-num{color:var(--facilities);}.events .summary-num{color:var(--events);}.housekeeping .summary-num{color:var(--housekeeping);}.marketing .summary-num{color:var(--marketing);}.pc .summary-num{color:var(--pc);}.procurement .summary-num{color:var(--procurement);}.travel .summary-num{color:var(--travel);}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
@@ -333,13 +342,15 @@ body{background-image:radial-gradient(circle,rgba(46,46,40,.7) 1px,transparent 1
 /* Modal backdrop blur */
 .modal-overlay{backdrop-filter:blur(4px);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-@media(max-width:800px){.grid{grid-template-columns:1fr;}.card.full{grid-column:1;}.summary-row{grid-template-columns:repeat(3,1fr);}.header-left h1{font-size:1.8rem;}.tasks-inner-grid{grid-template-columns:1fr 1fr;}.wl-stats-row{grid-template-columns:1fr 1fr;}.tasks-summary-row,.travel-stats{grid-template-columns:1fr 1fr 1fr;}}
+@media(max-width:800px){.overview-grid{grid-template-columns:repeat(3,1fr);}.grid{grid-template-columns:1fr;}.card.full{grid-column:1;}.summary-row{grid-template-columns:repeat(3,1fr);}.header-left h1{font-size:1.8rem;}.tasks-inner-grid{grid-template-columns:1fr 1fr;}.wl-stats-row{grid-template-columns:1fr 1fr;}.tasks-summary-row,.travel-stats{grid-template-columns:1fr 1fr 1fr;}}
 @media(max-width:500px){
   body{padding:1rem .75rem;}
   .header-left h1{font-size:1.5rem;}
   .summary-row{grid-template-columns:repeat(2,1fr);gap:.4rem;}
   .summary-num{font-size:1.6rem;}
   .summary-card{padding:.75rem .5rem;}
+  .overview-grid{grid-template-columns:repeat(2,1fr);gap:.6rem;}
+  .overview-doughnut{width:90px;height:90px;}
   .grid{grid-template-columns:1fr;}
   .tasks-inner-grid{grid-template-columns:1fr;}
   .wl-stats-row{grid-template-columns:1fr 1fr;}
@@ -715,7 +726,7 @@ function submitTravelBatch(){var fs=getFS();if(!fs.travelBatches)fs.travelBatche
 function doSubmitTrip(){var from=document.getElementById('mFrom').value;var to=document.getElementById('mTo').value;var notes=document.getElementById('mTripNotes').value.trim();var dateStr=document.getElementById('mTripDate').value;var kmVal=document.getElementById('mTripKm').value;var km=kmVal?parseFloat(kmVal):null;closeModal();var fs=getFS();if(!fs.travelLog)fs.travelLog=[];if(!fs.travelBatches)fs.travelBatches=[];var ts=dateStr?new Date(dateStr).getTime():Date.now();var active=fs.travelBatches.find(function(b){return!b.submitted;});if(!active){active={id:uid(),trips:[],submitted:false,created:Date.now()};fs.travelBatches.push(active);}var trip={id:uid(),date:ts,from:from,to:to,notes:notes,km:km};active.trips.push(trip);fs.travelLog.push(trip);saveFS(Object.assign({},fs));}
 function deleteTrip(id){var fs=getFS();var active=fs.travelBatches?fs.travelBatches.find(function(b){return!b.submitted;}):null;if(active)active.trips=active.trips.filter(function(t){return t.id!==id;});fs.travelLog=fs.travelLog.filter(function(t){return t.id!==id;});saveFS(Object.assign({},fs));}
 // MODAL
-function openModal(mode){
+function openModal(mode,opts){
   console.log('[AM] openModal called — mode:', mode);
   var overlay=document.getElementById('modalOverlay');var title=document.getElementById('modalTitle');var body=document.getElementById('modalBody');
   if(!overlay||!title||!body){console.error('[AM] openModal: modal DOM elements missing!',{overlay:!!overlay,title:!!title,body:!!body});return;}
@@ -724,7 +735,7 @@ function openModal(mode){
   if(mode==='onboarding'){title.textContent='New Starter';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. Sarah Smith"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOnboarding()">Create Checklist</button></div>';}
   else if(mode==='offboarding'){title.textContent='New Leaver';body.innerHTML='<div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="mName" placeholder="e.g. John Doe"/></div><div class="form-group"><label class="form-label">Office Location</label><select class="form-select" id="mLoc">'+locOpts+'</select></div><div class="form-group"><label class="form-label">Last Day</label><input class="form-input" id="mDate" type="date"/></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitOffboarding()">Create Checklist</button></div>';}
   else if(mode==='task'){
-    var precat=activeTab!=='all'?activeTab:'general';
+    var precat=(opts&&opts.cat)?opts.cat:(activeTab!=='all'?activeTab:'general');
     var catOpts=[{v:'general',l:'General'},{v:'expenses',l:'Expenses'},{v:'leadership',l:'Leadership'},{v:'ohs',l:'Health & Safety'},{v:'facilities',l:'Facilities'},{v:'events',l:'Events'},{v:'housekeeping',l:'Housekeeping'},{v:'travel',l:'Travel Claims'},{v:'marketing',l:'Marketing'},{v:'pc',l:'P&C'},{v:'procurement',l:'Procurement'}].map(function(c){return'<option value="'+c.v+'"'+(precat===c.v?' selected':'')+'>'+c.l+'</option>';}).join('');
     title.textContent='New Task';
     body.innerHTML='<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" id="mProjName" placeholder="e.g. Fix Bryanston aircon" oninput="autoDetectCat(this.value)"/></div><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="mTaskCat">'+catOpts+'</select></div><div class="form-group"><label class="form-label">Due Date <span style="opacity:.5;font-size:.9em">(optional)</span></label><div style="display:flex;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap">'+['Today','+ 1 Day','+ 3 Days','+ 7 Days'].map(function(l,i){var d=new Date();d.setDate(d.getDate()+[0,1,3,7][i]);var v=d.toISOString().slice(0,10);return'<button type="button" onclick="document.getElementById(\'mTaskDue\').value=\''+v+'\'" style="font-family:\'DM Mono\',monospace;font-size:.6rem;letter-spacing:.06em;padding:.25rem .6rem;border:1px solid var(--border);border-radius:2px;background:none;color:var(--muted);cursor:pointer">'+l+'</button>';}).join('')+'</div><input class="form-input" id="mTaskDue" type="date"/></div><div class="form-group"><label class="form-label">Steps <span style="opacity:.5;font-size:.9em">(optional)</span></label><div class="steps-input-list" id="stepsInputList"><div class="step-input-row"><input class="form-input" placeholder="Step 1"/><button class="remove-step-btn" onclick="removeStepInput(this)">&#x2715;</button></div></div><button class="add-step-btn" onclick="addStepInput()">+ Add Step</button></div><div class="modal-actions"><button class="modal-btn secondary" onclick="closeModal()">Cancel</button><button class="modal-btn primary" onclick="submitTask()">Add Task</button></div>';
@@ -943,8 +954,18 @@ function tasksHTML(catFilter){
 function renderTabContent(){
   var html='';
   if(activeTab==='all'){
-    html+=tasksHTML('all');
-    html+='<div class="grid">'+categories.map(function(cat,ci){return catCardHTML(cat,ci);}).join('')+'</div>';
+    var circ=238.76;
+    var allTiles=categories.map(function(cat){
+      var p=getProgress(cat);
+      var dash=p.total?Math.round(p.pct/100*circ*10)/10:0;
+      var col='var(--'+cat.color+')';
+      var ring='<svg class="overview-doughnut" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="'+col+'" stroke-width="9" opacity=".15"/><circle cx="50" cy="50" r="38" fill="none" stroke="'+col+'" stroke-width="9" stroke-dasharray="'+dash+' '+circ+'" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition:stroke-dasharray .5s ease"/><text x="50" y="46" text-anchor="middle" font-size="17" font-weight="900" fill="'+col+'" font-family="Onest,sans-serif">'+p.pct+'%</text><text x="50" y="60" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">'+p.done+'/'+p.total+'</text></svg>';
+      return'<div class="overview-tile '+cat.color+'" onclick="sidebarNav(\''+cat.id+'\')">'+ring+'<div class="overview-tile-label">'+cat.label+'</div><button class="overview-add-btn" style="color:'+col+';border-color:'+col+';opacity:.7" onclick="event.stopPropagation();openModal(\'task\',{cat:\''+cat.id+'\'})">+ New Task</button></div>';
+    }).join('');
+    var fs2=getFS();var batches2=fs2.travelBatches||[];var actB=batches2.find(function(b){return!b.submitted;})||{trips:[]};var tc=(actB.trips||[]).length;
+    var travelRing='<svg class="overview-doughnut" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="var(--travel)" stroke-width="9" opacity=".15"/><text x="50" y="46" text-anchor="middle" font-size="17" font-weight="900" fill="var(--travel)" font-family="Onest,sans-serif">'+tc+'</text><text x="50" y="60" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="Onest,sans-serif">trips</text></svg>';
+    var travelTileH='<div class="overview-tile travel-tile" onclick="sidebarNav(\'travel\')">'+travelRing+'<div class="overview-tile-label">Travel Claims</div><button class="overview-add-btn" style="color:var(--travel);border-color:var(--travel);opacity:.7" onclick="event.stopPropagation();openModal(\'trip\')">+ Log Trip</button></div>';
+    html+='<div class="overview-grid">'+allTiles+travelTileH+'</div>';
   } else if(activeTab==='general'){
     var gcat=categories.find(function(c){return c.id==='general';});
     if(gcat)html+='<div class="grid single-tab">'+catCardHTML(gcat,0)+'</div>';
@@ -1075,7 +1096,7 @@ function renderAll(){
   var isTravel=activeTab==='travel';
   var isWorklog=activeTab==='worklog';
   var leg=document.getElementById('legendRow');if(leg)leg.style.display=isOverview?'':'none';
-  if(isOverview)renderSummary();else document.getElementById('summaryRow').innerHTML='';
+  document.getElementById('summaryRow').innerHTML='';
   renderControlBar();
   if(isOverview||isWorklog)renderWorklog();else document.getElementById('worklogSection').innerHTML='';
   renderTabContent();
